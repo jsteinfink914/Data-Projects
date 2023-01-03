@@ -1,0 +1,14 @@
+.tabs{overflow:hidden;
+      background-color:black;
+      padding:15px 60px;
+      
+}
+.tabs a{float:left;
+        background-color:inherit;
+        color:white;
+        font-size:15px;
+        padding: 14px 16px;
+        text-align:center;
+        text-decoration:none;}
+.tabs a:hover{background-color:grey;
+              color:black;}

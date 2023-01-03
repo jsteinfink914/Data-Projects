@@ -1,0 +1,86 @@
+---
+title: "502 Reddit Project - Conclusion"
+author: "Jake Steinfink, Morgan Lopez, Sophia Elliott, Nina Thomas"
+date: "2022-12-07"
+output: html_document
+---
+## Conslusion
+
+## Summary:
+
+`Business Topic 1:` Emergency Room Diagnoses
+
+Our analysis found that the most common diagnoses on Reddit were anxiety, fever, headache, COVID-19, and depression, while the rest of the top mentions are related with general health and non-acute events. Further investigation showed that the conditions with the longest comments were postprocedural, drug therapy, nicotine addiction, immunization, and type 2 diabetes. These findings suggest that Reddit users often share their symptoms and tend to provide more detailed discussions about chronic or controversial conditions. Sentiment analysis revealed that 71.29% of the posts were labeled as negative, with the most negative sentiment being related to severe illnesses like COVID-19. On the other hand, positive sentiment was associated with conditions that involved long-term recovery or treatment.
+
+```{r, echo=FALSE, out.width="60%", out.height = "15%", fig.align="center", fig.cap= "Plot of the Top 20 most frequently mentioned causes of ER visits on Reddit"}
+knitr::include_graphics("../website-source/images/top_20_diags.png")
+```
+
+Sentiment analysis gave us a better understanding of our data than TF-IDF. Given our analysis of the most commonly discussed conditions and to what extent each was discussed, we next chose to explore the sentiment of the discourse. We found that the topics discussed with the most negative sentiment include upper respiratory infection, stomach pain, and allergy to penicillin. While those discussed with the most positive sentiment are drug therapy, type 2 diabetes, and hypercholesterolemia. Based on our NLP analysis, we can conclude that the diagnoses with the highest ratio of negative to positive sentiment are the ones that people are most likely to complain about. On the other hand, the diagnoses with the highest ratio of positive to negative sentiment are more likely to be related to chronic care plans or recovery journeys. This suggests that the health-related forums on Reddit are not only a place to share medical complaints, but also a place where people can share their positive experiences in overcoming medical conditions. 
+
+Subsequent analysis of EMS topics sought to predict illness severity using two approaches to the Random Forest model. We found that using the length of posts, the general topic, and the sentiment of the text, we were able to predict illness severity with a success rate of 72%. Despite having limited information, we were able to achieve relatively effective severity prediction in the hopes of helping identifying the most appropriate approach to individuals' medical issues.
+
+```{r, echo=FALSE, out.width="60%", out.height = "15%", fig.align="center", fig.cap= "A Confusion Matrix of Random Forest Classifiier Accuracy"}
+knitr::include_graphics("../website-source/images/confusionMatrix2_ml.png")
+
+```
+
+`Business Topic 2:` Reproductive Rights
+
+As we can see from the peak in the silhouette scores plot below, our data is best separated into 3 clusters. We initially thought that these clusters corresponded to the "pro-choice," "pro-life," and "Roe v. Wade" subreddits. However, this assumption was incorrect. The average label scores are evenly distributed across the groups, which suggests that each cluster contains a mixture of posts from the three subreddits. Furthermore, the average predicted subreddit score is close to 0 across all three clusters, indicating that the most commonly predicted subreddit is "pro-life." This suggests that the clusters are not characterized by subreddit labels, but rather by some other attributes. This is a fascinating discovery because it shows that subreddit alone is not enough to distinguish posts between these ostensibly dichotomous ideologies.
+
+```{r, echo=FALSE, out.width="60%", out.height = "15%", fig.align="center", fig.cap= "Plot 4: sillhouette score for kmeans"}
+knitr::include_graphics("../website-source/images/silScore_ml.png")
+```
+
+The graph of the silhouette score above shows that our data is clusterable into three groups, while the average subreddit score in the table below shows that posts from each subreddit (0=pro-life, 1 = pro-choice, 2= RoevWade) were fairly distributed among all clusters. This indicates that our data is separable by some other variable (or combination of variables) other than subreddit label. 
+
+```{r, echo=FALSE, out.width="60%", out.height = "15%", fig.align="center", fig.cap= "Table 2: Results Table of Kmeans Predictions"}
+knitr::include_graphics("../website-source/images/kmeansTbl_ml.png")
+```
+
+
+## Next Steps: 
+
+`Business Topic 1:` Emergency Room Diagnoses
+
+**1. While our Random Forest models show promise for predicting illness severity in the real-word, next steps are necessary for fortifying and scaling this approach. We propose the following: ** 
+
+* Train the model on more data (and more recent data - perhaps via web scraping) to improve its accuracy
+
+* Find a systematic approach to categorizing the three severity groups, ideally with input from someone with medical expertise. Right now, each group label is chosen based on the words that appear in the posts. These words were selected by our team (we do not have medical expertise). Conducting further research into which ems_topics should pertain to each group and/or seeking advice from an expert would be incredibly helpful in ensuring that the severity criteria accurately reflects the true severity of the post's topic. 
+
+* It would be interesting to extend this to be user-friendly so people and medical staff could actually utilize these severity predictions - perhaps in an app form where we could predict user input in real time. 
+
+`Business Topic 2:` Reproductive Rights
+
+**1. The results of the K Means algorithm revealed that although our data was able to be clustered into three distinct groups, clusters were not defined by the subredit labels that we were expecting. In order to address the questions that remain after this analysis, we propose the following next steps:** 
+
+* It would be beneficial to determine which variables are informative in separating the clusters (we already determined that the subreddit variable is not responsible for separating clusters). Could it be length, sentiment, or some other feature? Further analysis into particularly contributing features would illuminate similarities and differences between pro-life and pro-choice posts from an ideological standpoint.
+
+* Expanding the dataset to include a larger and more diverse range of posts from both pro-life and pro-choice Reddit communities. This could help the algorithm to better understand the nuances of language and topic usage within each group, and to more accurately distinguish between pro-life and pro-choice posts.
+
+* Investigating and implementing different clustering algorithms to determine which one produces the most accurate and reliable results. This could involve testing different algorithms and comparing their performance on the same dataset.
+
+* Incorporating additional features and variables into the clustering algorithm, such as the user's posting history and the context of the post (e.g. its location in a thread or the subreddit in which it was posted). These additional features could help the algorithm to more accurately classify posts and to better understand the context in which they were written.
+
+* Using the results of the clustering algorithm to identify and analyze trends and patterns within the pro-life and pro-choice communities on Reddit. This could include identifying common themes and topics of discussion (perhaps named entity recognition (NER)), as well as exploring differences in language use and engagement patterns between the two groups.
+
+* Validating the results of the clustering algorithm through manual examination and comparison with existing research on pro-life and pro-choice communities on Reddit.
+
+* This could involve comparing the algorithm's classification of posts with known pro-life and pro-choice subreddits, as well as soliciting feedback and input from experts in the field.
+
+**2. Although gradient Boosting predicted posts from pro-life vs. pro-choice subreddits with 80% accuracy, it was far superior at predicting pro-life posts than pro-choice. We propose the following next steps to adress the model's deficits: ** 
+
+* Fine-tuning the hyperparameters of the gradient boosting algorithm to improve its performance on the pro-choice class. This could involve experimenting with different combinations of learning rate, number of trees, and tree depth to find the optimal settings for predicting pro-choice posts.
+
+* Incorporating additional features and variables into the gradient boosting algorithm, such as the user's posting history and the context of the post (e.g. its location in a thread or the subreddit in which it was posted). These additional features could help the algorithm to more accurately predict the subreddit of a post, and to better understand the context in which it was written.
+
+* Validating the results of the gradient boosting algorithm through manual examination and comparison with existing research on pro-life and pro-choice communities on Reddit. This could involve comparing the algorithm's predictions with known pro-life and pro-choice subreddits.
+
+### Appendix
+
+##### Updates
+
+1. Since the intermediate NLP and ML stages, we added a few boolean variables to our clustering analysis for Reproductive Rights to try and improve accuracy and see further divisions or similarities between the subreddits. Even after this, we were still unable to distinguish between the subreddits with great clarity.
+
