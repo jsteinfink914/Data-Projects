@@ -1,0 +1,593 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Cardo;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Arial",sans-serif;}
+.MsoChpDefault
+	{font-family:"Arial",sans-serif;}
+.MsoPapDefault
+	{line-height:115%;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+
+</head>
+
+<body bgcolor=white lang=EN-US style='word-wrap:break-word'>
+
+<div class=WordSection1>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>Jake Steinfink</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>ANLY-555</span></p>
+
+<p class=MsoNormal><b><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif;color:#2D3B45'><span style='text-decoration:
+ none'>&nbsp;</span></span></u></b></p>
+
+<p class=MsoNormal><b><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif;color:#2D3B45'>DataScience ToolBox
+Design</span></u></b></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif;color:#2D3B45'>DataSet</span></u></i></p>
+
+<p class=MsoNormal><img width=751 height=92
+src="Data%20Structures_%20Executive%20Summary%20Report_files/image001.gif"
+align=left hspace=12 vspace=12></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>The DataSet class is meant
+to serve as a means of handling all different types of datasets. Irrespective
+of the type of dataset, this class provides the functionality to load the data
+into a usable dataframe, clean the data, with appropriate options to fill
+missing values with the mean, median, or mode, and explore the data through
+different types of charts suited to each dataset type. The different dataset
+types with functionality are TimeSeries, Text, Quantitative, and Qualitative.
+Additionally, this class also provides the ability to perform these operations
+on multiple different datasets and dataset types at once through the
+HeterogeneousData subclass.</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif;color:#2D3B45'>ClassifierAlgorithm</span></u></i></p>
+
+<p class=MsoNormal><img width=624 height=137
+src="Data%20Structures_%20Executive%20Summary%20Report_files/image002.gif"
+align=left></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>The ClassifierAlgorithm
+Class provides functionality for a simpleKNN and DecisionTree classifier. These
+algorithms are meant to be used to predict labels in a test dataset based on a
+labeled train dataset. The simpleKNN classifier runs in BigO(n) time to make
+predictions for each test point, while the DecisionTree classifier can make
+predictions in constant time. </span></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif;color:#2D3B45'><span style='text-decoration:
+ none'>&nbsp;</span></span></u></i></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif;color:#2D3B45'>Experiment </span></u></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif;color:#2D3B45'>The Experiment class is the
+most results oriented class in the toolkit. It is the class that is used to
+analyze the effectiveness of algorithms. Within the class there is
+functionality to run cross validation for each algorithm, score each algorithm
+with an overall accuracy result, display a confusion matrix, and create a ROC
+curve to show the tradeoff between false positive rates and true positive rates
+(the cost of tuning the algorithm to identify all positives).</span></p>
+
+<p class=MsoNormal><b><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif;color:#2D3B45'><span style='text-decoration:
+ none'>&nbsp;</span></span></u></b></p>
+
+<p class=MsoNormal><b><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif;color:#2D3B45'><span style='text-decoration:
+ none'>&nbsp;</span></span></u></b></p>
+
+<p class=MsoNormal><b><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>SimpleKNNClassifier</span></u></b></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Summary</span></u></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>The SimpleKNNClassifier algorithm is quite
+simple. It relies on the idea that rows near each other share similar
+properties, and in this specific case, share similar labels. As a result, the
+algorithm’s goal is to find the K rows (K is a user defined input) nearest to
+the test row of interest. Once these are isolated, the labels of these rows are
+examined and used to make a prediction; the most common label occurring in the
+k nearest neighbors is used as the predicted label for the test row.</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Pseudo Code</span></u></i></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Train Method</span></i></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Inputs- train data and labels </span></i></p>
+
+<ol style='margin-top:0in' start=1 type=1>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>TrainData, TrainLabels assigned to
+     member attributes</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>Assign unique classes to member
+     attribute</span></li>
+</ol>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Test Method</span></i></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Inputs – test data and associated labels</span></i></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Outputs – List of predicted labels, stored
+as dictionaries </span></i></p>
+
+<ol style='margin-top:0in' start=1 type=1>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:Cardo'>Predicted_Labels &#8592; [ ]</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>For each row in the test data:</span></li>
+ <ol style='margin-top:0in' start=1 type=a>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:Cardo'>Row &#8592; row</span></li>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:Cardo'>Neighbors &#8592; [ ]</span></li>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>For each row in the train set</span></li>
+  <ol style='margin-top:0in' start=1 type=i>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>Append tuple of the form (train
+       [row] , euclidean distance )</span></li>
+  </ol>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:Cardo'>Neighbors &#8592; [Neighbors sorted by euclidean
+      distance, ascending ] [:3]</span></li>
+ </ol>
+</ol>
+
+<p class=MsoNormal style='margin-left:1.5in;text-indent:.5in'><span lang=EN
+style='font-size:12.0pt;line-height:115%;font-family:"Times New Roman",serif'> ##Take
+first k entries</span></p>
+
+<ol style='margin-top:0in' start=2 type=1>
+ <ol style='margin-top:0in' start=5 type=a>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:Cardo'>Prediction &#8592; {}</span></li>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>For each  unique neighbor in
+      Neighbors</span></li>
+  <ol style='margin-top:0in' start=1 type=i>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:Cardo'>Prop &#8592; Instances of unique neighbor in
+       Neighbors/Number of neighbors</span></li>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:Cardo'>Prediction[ unique neighbor ] &#8592; Prop</span></li>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>Append Prediction to Predicted_Labels</span></li>
+  </ol>
+ </ol>
+</ol>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><u><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'><span style='text-decoration:none'>&nbsp;</span></span></u></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Time Complexity for Test Method:</span></u></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>BigO(nlogn) c=m * z (size of the test
+data), n<sub>0</sub>=20</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>With respect to time complexity, the
+SimpleKNNClassifier is BigO(nlogn) meaning that the time it takes to run is
+dependent on the size of the input in a quasi – linear fashion, but it really
+is more exponential because the coefficient for this particular method is m*z,
+the number of columns in the dataset * the size of the test data. The time
+complexity is due to the fact that for every test row, the algorithm makes use
+of every training row, with all of its columns, to calculate the euclidean
+distance. All other elements of the algorithm are simple sorting procedures
+which are completed in nlogn time.</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><b><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>DecisionTreeClassifier</span></u></b></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Summary</span></u></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>The DecisionTreeClassifier creates a
+decision tree in the train method and predicts test rows in the test method for
+quantitative data. The structure of the decision tree is such that the train indices
+at each node are held as the key, the payload is the train labels associated
+with the indices. Each node also holds an attribute called decision which holds
+a dictionary containing either the split criteria at the node, or if a terminal
+node, a dictionary holding the classes present at that node and their
+associated proportions. Splits are determined by iterating over each column and
+each value of that column to find the split that produces the lowest gini
+impurity index score. The split that satisfies this is then stored at the
+decision attribute of the node and the process is then repeated recursively for
+both the left and right child nodes until the tree reaches max_depth or
+min_size limitations.</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Pseudo Code:</span></u></i></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Train Method</span></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Inputs-<i> </i>train data and train labels</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Outputs – Decision Tree</span></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></i></p>
+
+<ol style='margin-top:0in' start=1 type=1>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>Assign test data and test labels to
+     member attributes</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>Assign unique classes in the data to
+     member attribute</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>Initialize Tree using a Tree class
+     (Supports a tree structure and node attributes) with indices as the key and
+     labels as the payload</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>Assign root node</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>Build a tree with user defined
+     max_depth and min_size arguments</span></li>
+ <ol style='margin-top:0in' start=1 type=a>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>Get the best split for the root node</span></li>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>Call a recursive split function that
+      checks to make sure max_depth and min_size parameters are not violated.</span></li>
+  <ol style='margin-top:0in' start=1 type=i>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>Store the split in the decision
+       attribute of the node</span></li>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>If not violated, initialize a left
+       child with the indices that are less then the split value and then split
+       that node and repeat.</span></li>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>Do the same for the right child
+       node</span></li>
+  </ol>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>When depth and size parameters are
+      violated, replace the decision attribute with a dictionary containing the
+      labels and proportions represented in that node</span></li>
+ </ol>
+</ol>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Test Method</span></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Inputs <i>–</i> test data and associated
+labels</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Outputs – List of predicted labels, stored
+as dictionaries </span></p>
+
+<p class=MsoNormal><i><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></i></p>
+
+<ol style='margin-top:0in' start=1 type=1>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>Predicted_Labels=[]</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>For each row in the test data:</span></li>
+ <ol style='margin-top:0in' start=1 type=a>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>Navigate the tree starting at the
+      root and check if the value in the row at the column stored in the node
+      (in the decision attribute) is less than the split value or not</span></li>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>If less and the left child node is
+      not a terminal node, recurse</span></li>
+  <ol style='margin-top:0in' start=1 type=i>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>If it is a terminal node, return
+       the dictionary holding class proportions</span></li>
+  </ol>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>Repeat step b for right child node
+      if the value is greater</span></li>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>Append terminal node result to
+      Predicted_Labels</span></li>
+ </ol>
+</ol>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Time Complexity for Train Method:</span></u></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Big O(n^2) c=m n0=200</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>With respect to time complexity, the
+DecisionTreeClassifier is BigO(n^2). It is also dependent on m, the number of
+columns in the data. The time complexity is n^2 due to the fact that to build
+the tree, all of the rows and columns in the node must be examined to find the
+best split. For the root node this is n*m and for all other nodes it sums to
+n*m. This is because at each level the data points in each node are ½ as many
+as in the parent node, however because the splitting has to be performed for
+all nodes, each level ends up iterating through all of the data points again.
+As a result, building the tree is relatively time consuming, but the payoff is
+found in the test method.</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Time Complexity for Test Method</span></u></i><i><span
+lang=EN style='font-size:12.0pt;line-height:115%;font-family:"Times New Roman",serif'>:</span></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Big O(n, n=test set size): c=8 n<sub>0</sub>=3</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>The time complexity of the test method is
+linear with respect to the size of the test input. For each test data point, a
+constant number of operations is performed and the result returned. Thus,
+predicting a test label using the tree is exceedingly efficient.</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><b><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>ROC</span></u></b></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Summary</span></u></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>The ROC curve algorithm creates a ROC
+curve for each classifier displaying the performance at all classification
+thresholds. If it is a 2 class problem, one curve is plotted for each
+classifier, if a multi-class problem, then one curve for each label is plotted
+treating all other classes as negative points. The algorithm works by taking
+two lists, the actual labels and predicted labels. The lists are sorted in a
+decreasing order based on the likelihood of the instance being positive. Then,
+for every distinct likelihood, the number of positive and negative instances
+are calculated creating a true positive rate and false positive rate pairing
+for every distinct cutoff. The resulting curve travels from (0,0) to (1,1) with
+a path dependent on the accuracy of the classifier. The greater the area under
+the ROC curve (AUC), the better the classifier. A random classifier would
+create a line of the form y = x.</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Pseudo Code</span></u></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Inputs – List of Likelihoods (probability
+that the test row belongs to the positive class) and true </span></p>
+
+<p class=MsoNormal style='margin-left:.5in'><span lang=EN style='font-size:
+12.0pt;line-height:115%;font-family:"Times New Roman",serif'>  labels </span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>Outputs – ROC Points in the form of
+(FPR,TPR)</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<ol style='margin-top:0in' start=1 type=1>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:Cardo'>Predictions &#8592; List of likelihood scores in
+     decreasing order</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:Cardo'>Labels &#8592; Sorted by same index as Predictions</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:Cardo'>R &#8592; [ ] – will store tuples of ROC points
+     (TPR,FPR)</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:Cardo'>FP,TP &#8592; 0 </span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:Cardo'>P &#8592; Number of instances of the positive class in
+     the true labels</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:Cardo'>N &#8592; Number of negative instances in the true
+     labels</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:Cardo'>Previous &#8592; any number less than 0</span></li>
+ <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+     font-family:"Times New Roman",serif'>For each instance in the Predictions
+     List:</span></li>
+ <ol style='margin-top:0in' start=1 type=a>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>If Predictions[ i ] /= Previous or i
+      == len(Labels) -1</span></li>
+  <ol style='margin-top:0in' start=1 type=i>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:Cardo'>FPR &#8592; FP/N</span></li>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:Cardo'>TPR &#8592; TP/P</span></li>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>Append (FPR,TPR) to R</span></li>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:Cardo'>Previous &#8592; Predictions[ i ]</span></li>
+  </ol>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>If Labels[ i ] is positive</span></li>
+  <ol style='margin-top:0in' start=1 type=i>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>TP += 1</span></li>
+  </ol>
+  <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+      font-family:"Times New Roman",serif'>Else</span></li>
+  <ol style='margin-top:0in' start=1 type=i>
+   <li class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+       font-family:"Times New Roman",serif'>FP +=1 </span></li>
+  </ol>
+ </ol>
+</ol>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><i><u><span lang=EN style='font-size:12.0pt;line-height:
+115%;font-family:"Times New Roman",serif'>Time Complexity for ROC Method:</span></u></i></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>BigO(nlogn) </span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>With respect to time complexity, the ROC
+method is BigO(n) where n is the number of test labels. Determining the ROC
+points for every cutoff is done in a constant number of steps, most of which
+result from getting the information organized into the form necessary to run
+this algorithm. Another element to consider is the sorting method used to sort
+the likelihoods in descending order. Many, such as merge sort and quick sort
+will complete this procedure in logn time.</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN style='font-size:12.0pt;line-height:115%;
+font-family:"Times New Roman",serif'>&nbsp;</span></p>
+
+</div>
+
+</body>
+
+</html>

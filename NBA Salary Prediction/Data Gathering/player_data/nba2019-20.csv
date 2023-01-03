@@ -1,0 +1,529 @@
+team,salary,player,position,season
+Golden State Warriors,40231758,Stephen Curry, PG,2019-2020
+Oklahoma City Thunder,38506482,Chris Paul, PG,2019-2020
+Houston Rockets,38506482,Russell Westbrook, PG,2019-2020
+Washington Wizards,38199000,John Wall, PG,2019-2020
+Brooklyn Nets,38199000,Kevin Durant, SF,2019-2020
+Houston Rockets,38199000,James Harden, SG,2019-2020
+Los Angeles Lakers,37436858,LeBron James, SF,2019-2020
+Toronto Raptors,34996296,Kyle Lowry, PG,2019-2020
+Detroit Pistons,34449964,Blake Griffin, PF,2019-2020
+Philadelphia 76ers,32742000,Tobias Harris, SF,2019-2020
+Miami Heat,32742000,Jimmy Butler, SF,2019-2020
+LA Clippers,32742000,Kawhi Leonard, SF,2019-2020
+Golden State Warriors,32742000,Klay Thompson, SG,2019-2020
+Boston Celtics,32742000,Kemba Walker, PG,2019-2020
+Boston Celtics,32700690,Gordon Hayward, SF,2019-2020
+Utah Jazz,32511624,Mike Conley, PG,2019-2020
+Brooklyn Nets,31742000,Kyrie Irving, PG,2019-2020
+Milwaukee Bucks,30603448,Khris Middleton, SF,2019-2020
+LA Clippers,30560700,Paul George, SG,2019-2020
+Denver Nuggets,30350000,Paul Millsap, PF,2019-2020
+Portland Trail Blazers,29802321,Damian Lillard, PG,2019-2020
+Cleveland Cavaliers,28942830,Kevin Love, PF,2019-2020
+Philadelphia 76ers,28000000,Al Horford, PF,2019-2020
+Orlando Magic,28000000,Nikola Vucevic, C,2019-2020
+San Antonio Spurs,27739975,DeMar DeRozan, SF,2019-2020
+Portland Trail Blazers,27556959,CJ McCollum, SG,2019-2020
+Philadelphia 76ers,27504630,Joel Embiid, C,2019-2020
+Minnesota Timberwolves,27504630,Andrew Wiggins, SF,2019-2020
+Denver Nuggets,27504630,Nikola Jokic, C,2019-2020
+Phoenix Suns,27285000,Devin Booker, SG,2019-2020
+Minnesota Timberwolves,27285000,D'Angelo Russell, SG,2019-2020
+Minnesota Timberwolves,27285000,Karl-Anthony Towns, C,2019-2020
+Dallas Mavericks,27285000,Kristaps Porzingis, PF,2019-2020
+Chicago Bulls,27250575,Otto Porter Jr., SF,2019-2020
+Washington Wizards,27093019,Bradley Beal, SG,2019-2020
+Detroit Pistons,27093019,Andre Drummond, C,2019-2020
+Los Angeles Lakers,27093018,Anthony Davis, PF,2019-2020
+Portland Trail Blazers,27093017,Hassan Whiteside, C,2019-2020
+New Orleans Pelicans,26231111,Jrue Holiday, SG,2019-2020
+San Antonio Spurs,26000000,LaMarcus Aldridge, PF,2019-2020
+Oklahoma City Thunder,25842697,Steven Adams, C,2019-2020
+Milwaukee Bucks,25842697,Giannis Antetokounmpo, PF,2019-2020
+Toronto Raptors,25595700,Marc Gasol, C,2019-2020
+Charlotte Hornets,25565217,Nicolas Batum, SG,2019-2020
+Atlanta Hawks,25102511,Chandler Parsons, SF,2019-2020
+Sacramento Kings,24147727,Harrison Barnes, SF,2019-2020
+Toronto Raptors,23271604,Serge Ibaka, C,2019-2020
+Utah Jazz,23241573,Rudy Gobert, C,2019-2020
+Oklahoma City Thunder,22615559,Danilo Gallinari, PF,2019-2020
+Indiana Pacers,21000000,Victor Oladipo, SG,2019-2020
+Dallas Mavericks,20025127,Tim Hardaway Jr., SG,2019-2020
+Indiana Pacers,20000000,Malcolm Brogdon, PG,2019-2020
+Charlotte Hornets,19894737,Terry Rozier, PG,2019-2020
+Orlando Magic,19863636,Aaron Gordon, PF,2019-2020
+Chicago Bulls,19500000,Zach LaVine, PG,2019-2020
+Sacramento Kings,19269662,Kent Bazemore, SG,2019-2020
+Miami Heat,19217900,Goran Dragic, PG,2019-2020
+Minnesota Timberwolves,19000000,Jeff Teague, PG,2019-2020
+Atlanta Hawks,18606556,Evan Turner, SG,2019-2020
+Golden State Warriors,18539130,Draymond Green, PF,2019-2020
+Cleveland Cavaliers,18539130,Tristan Thompson, C,2019-2020
+Minnesota Timberwolves,18500000,Allen Crabbe, G,2019-2020
+New York Knicks,18000000,Julius Randle, PF,2019-2020
+Indiana Pacers,18000000,Myles Turner, C,2019-2020
+Denver Nuggets,17839286,Gary Harris, SG,2019-2020
+New Orleans Pelicans,17650000,Derrick Favors, C,2019-2020
+Miami Heat,17185185,Andre Iguodala, SG,2019-2020
+Orlando Magic,17150000,Evan Fournier, SG,2019-2020
+Charlotte Hornets,17000000,Bismack Biyombo, C,2019-2020
+Utah Jazz,17000000,Bojan Bogdanovic, SF,2019-2020
+Orlando Magic,16720000,Timofey Mozgov, C,2019-2020
+Memphis Grizzlies,16229213,Gorgui Dieng, C,2019-2020
+Phoenix Suns,16200000,Ricky Rubio, PG,2019-2020
+Memphis Grizzlies,16000000,Jonas Valanciunas, C,2019-2020
+Los Angeles Lakers,15680000,JR Smith, SG,2019-2020
+Detroit Pistons,15643750,Brandon Knight, PG,2019-2020
+Phoenix Suns,15625000,Kelly Oubre Jr., SF,2019-2020
+Milwaukee Bucks,15625000,Eric Bledsoe, PG,2019-2020
+Oklahoma City Thunder,15500000,Dennis Schroder, PG,2019-2020
+Washington Wizards,15450051,Ian Mahinmi, C,2019-2020
+Minnesota Timberwolves,15349400,James Johnson, PF,2019-2020
+New York Knicks,15000000,Bobby Portis, PF,2019-2020
+New York Knicks,15000000,Marcus Morris Sr., SF,2019-2020
+Houston Rockets,14896552,Clint Capela, C,2019-2020
+Miami Heat,14651700,Luke Babbitt, F,2019-2020
+Los Angeles Lakers,14634146,Danny Green, SG,2019-2020
+San Antonio Spurs,14500000,Rudy Gay, SF,2019-2020
+Charlotte Hornets,14471910,Cody Zeller, C,2019-2020
+Houston Rockets,14057730,Eric Gordon, SG,2019-2020
+Denver Nuggets,14041096,Mason Plumlee, PF,2019-2020
+LA Clippers,13565218,Marcin Gortat, C,2019-2020
+New Orleans Pelicans,13486300,JJ Redick, SG,2019-2020
+Utah Jazz,13437500,Jordan Clarkson, PG,2019-2020
+Sacramento Kings,13333333,Dewayne Dedmon, C,2019-2020
+Portland Trail Blazers,13125000,Jusuf Nurkic, C,2019-2020
+Miami Heat,13000000,Justise Winslow, SF,2019-2020
+Chicago Bulls,12900000,Thaddeus Young, PF,2019-2020
+Denver Nuggets,12776786,Will Barton, SF,2019-2020
+Dallas Mavericks,12759670,Courtney Lee, SG,2019-2020
+Memphis Grizzlies,12758781,Solomon Hill, SF,2019-2020
+Cleveland Cavaliers,12727273,Larry Nance Jr., PF,2019-2020
+Miami Heat,12667885,Kelly Olynyk, PF,2019-2020
+Boston Celtics,12553571,Marcus Smart, PG,2019-2020
+Memphis Grizzlies,12500000,Miles Plumlee, C,2019-2020
+Orlando Magic,12500000,Terrence Ross, SG,2019-2020
+Milwaukee Bucks,12500000,Nikola Mirotic, F,2019-2020
+San Antonio Spurs,12428571,Patty Mills, PG,2019-2020
+Indiana Pacers,12400000,Tyreke Evans, G,2019-2020
+LA Clippers,12345680,Patrick Beverley, PG,2019-2020
+Sacramento Kings,12195122,Trevor Ariza, SF,2019-2020
+Milwaukee Bucks,12093023,Brook Lopez, C,2019-2020
+Sacramento Kings,12000000,Cory Joseph, PG,2019-2020
+Utah Jazz,11954546,Joe Ingles, SG,2019-2020
+Dallas Mavericks,11692308,Zach Randolph, F,2019-2020
+Detroit Pistons,11392857,Tony Snell, SF,2019-2020
+Minnesota Timberwolves,11301219,Robert Covington, PF,2019-2020
+Miami Heat,11286516,Meyers Leonard, C,2019-2020
+Chicago Bulls,11286516,Omer Asik, C,2019-2020
+New York Knicks,11011234,Maurice Harkless, SF,2019-2020
+Indiana Pacers,10810000,T.J. Warren, SF,2019-2020
+Oklahoma City Thunder,10740740,Andre Roberson, SG,2019-2020
+Brooklyn Nets,10605600,Spencer Dinwiddie, PG,2019-2020
+Indiana Pacers,10500000,Jeremy Lamb, SG,2019-2020
+Dallas Mavericks,10259375,Dwight Powell, C,2019-2020
+Toronto Raptors,10116576,Norman Powell, SG,2019-2020
+Philadelphia 76ers,10116576,Josh Richardson, SG,2019-2020
+Indiana Pacers,10000000,Darren Collison, G,2019-2020
+Chicago Bulls,10000000,Tomas Satoransky, SG,2019-2020
+Brooklyn Nets,9881598,DeAndre Jordan, C,2019-2020
+New Orleans Pelicans,9757440,Zion Williamson, SF,2019-2020
+Orlando Magic,9745200,Markelle Fultz, PG,2019-2020
+Detroit Pistons,9732396,John Henson, PF,2019-2020
+Cleveland Cavaliers,9607500,Matthew Dellavedova, PG,2019-2020
+Utah Jazz,9600000,Dante Exum, PG,2019-2020
+Phoenix Suns,9562920,Deandre Ayton, C,2019-2020
+Dallas Mavericks,9473684,Delon Wright, PG,2019-2020
+Toronto Raptors,9346153,Fred VanVleet, SG,2019-2020
+Denver Nuggets,9346153,Jerami Grant, PF,2019-2020
+Memphis Grizzlies,9258000,Tyus Jones, PG,2019-2020
+Orlando Magic,9258000,Al-Farouq Aminu, PF,2019-2020
+Milwaukee Bucks,9133907,George Hill, PG,2019-2020
+Memphis Grizzlies,9073050,Kyle Anderson, SF,2019-2020
+New York Knicks,9000000,Taj Gibson, C,2019-2020
+Memphis Grizzlies,8730240,Ja Morant, PG,2019-2020
+New Orleans Pelicans,8719320,Lonzo Ball, PG,2019-2020
+New Orleans Pelicans,8664928,E'Twaun Moore, SG,2019-2020
+Sacramento Kings,8556120,Marvin Bagley III, PF,2019-2020
+Sacramento Kings,8529386,Bogdan Bogdanovic, SG,2019-2020
+Houston Rockets,8349039,P.J. Tucker, PF,2019-2020
+Washington Wizards,8333333,C.J. Miles, SG,2019-2020
+Chicago Bulls,8156500,Cristiano Felicio, PF,2019-2020
+Philadelphia 76ers,8113930,Ben Simmons, PG,2019-2020
+Los Angeles Lakers,8089282,Kentavious Caldwell-Pope, SG,2019-2020
+Washington Wizards,8000000,Thomas Bryant, C,2019-2020
+New York Knicks,8000000,Elfrid Payton, PG,2019-2020
+New York Knicks,8000000,Wayne Ellington, SG,2019-2020
+LA Clippers,8000000,Lou Williams, SG,2019-2020
+Dallas Mavericks,8000000,Maxi Kleber, PF,2019-2020
+New York Knicks,7839960,RJ Barrett, SG,2019-2020
+Boston Celtics,7830000,Jayson Tatum, PF,2019-2020
+Memphis Grizzlies,7815533,Jae Crowder, SF,2019-2020
+Dallas Mavericks,7683360,Luka Doncic, SG,2019-2020
+Brooklyn Nets,7666667,Joe Harris, SF,2019-2020
+Phoenix Suns,7464912,Darrell Arthur, F,2019-2020
+Dallas Mavericks,7461380,Seth Curry, SG,2019-2020
+Indiana Pacers,7333333,Doug McDermott, SF,2019-2020
+Detroit Pistons,7333333,Langston Galloway, SG,2019-2020
+Detroit Pistons,7317073,Derrick Rose, PG,2019-2020
+New Orleans Pelicans,7265485,Brandon Ingram, SF,2019-2020
+Orlando Magic,7250000,D.J. Augustin, PG,2019-2020
+Brooklyn Nets,7119650,Lance Thomas, SF,2019-2020
+Atlanta Hawks,7068360,De'Andre Hunter, SF,2019-2020
+Memphis Grizzlies,7059480,Josh Jackson, SG,2019-2020
+Washington Wizards,7000000,Davis Bertans, SF,2019-2020
+Milwaukee Bucks,7000000,Ersan Ilyasova, PF,2019-2020
+New Orleans Pelicans,7000000,Darius Miller, SF,2019-2020
+Memphis Grizzlies,6927480,Jaren Jackson Jr., PF,2019-2020
+Sacramento Kings,6825000,Nemanja Bjelica, PF,2019-2020
+Boston Celtics,6534829,Jaylen Brown, SG,2019-2020
+Sacramento Kings,6500000,Jabari Parker, PF,2019-2020
+LA Clippers,6481482,Ivica Zubac, C,2019-2020
+Cleveland Cavaliers,6400920,Darius Garland, PG,2019-2020
+Sacramento Kings,6392760,De'Aaron Fox, PG,2019-2020
+LA Clippers,6300000,Milos Teodosic, G,2019-2020
+Atlanta Hawks,6273000,Trae Young, PG,2019-2020
+Washington Wizards,6134520,Wesley Johnson, F,2019-2020
+Washington Wizards,6000000,Ish Smith, PG,2019-2020
+LA Clippers,6000000,Montrezl Harrell, PF,2019-2020
+San Antonio Spurs,5846154,Marco Belinelli, SG,2019-2020
+Minnesota Timberwolves,5813640,Jarrett Culver, SG,2019-2020
+Orlando Magic,5806440,Jonathan Isaac, PF,2019-2020
+Portland Trail Blazers,5718000,Rodney Hood, SF,2019-2020
+Washington Wizards,5700000,Jonathon Simmons, G,2019-2020
+Orlando Magic,5697600,Mo Bamba, C,2019-2020
+San Antonio Spurs,5500000,Trey Lyles, C,2019-2020
+Oklahoma City Thunder,5455236,Alex Abrines, G,2019-2020
+Phoenix Suns,5453280,Aron Baynes, C,2019-2020
+New Orleans Pelicans,5450000,Jason Smith, F,2019-2020
+Chicago Bulls,5348007,Kris Dunn, PG,2019-2020
+Chicago Bulls,5307120,Coby White, PG,2019-2020
+Chicago Bulls,5300400,Lauri Markkanen, PF,2019-2020
+LA Clippers,5285394,Alexis Ajinca, C,2019-2020
+Chicago Bulls,5201400,Wendell Carter Jr., C,2019-2020
+Dallas Mavericks,5000000,Dirk Nowitzki, F,2019-2020
+Boston Celtics,5000000,Daniel Theis, C,2019-2020
+Oklahoma City Thunder,4996000,Kyle Singler, F,2019-2020
+New Orleans Pelicans,4862040,Jaxson Hayes, C,2019-2020
+Sacramento Kings,4861208,Buddy Hield, SG,2019-2020
+New York Knicks,4855800,Frank Ntilikina, PG,2019-2020
+LA Clippers,4807693,Rodney McGruder, SG,2019-2020
+Utah Jazz,4767000,Ed Davis, C,2019-2020
+Sacramento Kings,4767000,Richaun Holmes, C,2019-2020
+Phoenix Suns,4767000,Frank Kaminsky, C,2019-2020
+Philadelphia 76ers,4767000,Mike Scott, PF,2019-2020
+Brooklyn Nets,4767000,Garrett Temple, SG,2019-2020
+Milwaukee Bucks,4767000,Robin Lopez, C,2019-2020
+Los Angeles Lakers,4767000,Avery Bradley, PG,2019-2020
+LA Clippers,4767000,JaMychal Green, PF,2019-2020
+Indiana Pacers,4767000,Justin Holiday, SF,2019-2020
+Boston Celtics,4767000,Enes Kanter, C,2019-2020
+Cleveland Cavaliers,4764960,Collin Sexton, PG,2019-2020
+Washington Wizards,4469160,Rui Hachimura, PF,2019-2020
+Golden State Warriors,4464226,Kevon Looney, PF,2019-2020
+New York Knicks,4463640,Dennis Smith Jr., PG,2019-2020
+Denver Nuggets,4444746,Jamal Murray, PG,2019-2020
+New York Knicks,4380120,Kevin Knox II, SF,2019-2020
+Houston Rockets,4320500,Luc Mbah a Moute, PF,2019-2020
+Atlanta Hawks,4245720,Cam Reddish, SG,2019-2020
+Portland Trail Blazers,4240200,Zach Collins, PF,2019-2020
+Phoenix Suns,4161000,Mikal Bridges, SF,2019-2020
+Sacramento Kings,4160000,Alex Len, C,2019-2020
+New Orleans Pelicans,4102564,Nicolo Melli, PF,2019-2020
+Phoenix Suns,4033440,Cameron Johnson, SF,2019-2020
+Charlotte Hornets,4028400,Malik Monk, SG,2019-2020
+Toronto Raptors,4000000,Patrick McCaw, SF,2019-2020
+New York Knicks,4000000,Reggie Bullock, SF,2019-2020
+Los Angeles Lakers,4000000,JaVale McGee, C,2019-2020
+Dallas Mavericks,4000000,Dorian Finney-Smith, SF,2019-2020
+Oklahoma City Thunder,3952920,Shai Gilgeous-Alexander, SG,2019-2020
+Charlotte Hornets,3831840,PJ Washington, PF,2019-2020
+Detroit Pistons,3827160,Luke Kennard, SG,2019-2020
+Charlotte Hornets,3755400,Miles Bridges, SF,2019-2020
+San Antonio Spurs,3754886,Jakob Poeltl, C,2019-2020
+Miami Heat,3640200,Tyler Herro, SG,2019-2020
+Utah Jazz,3635760,Donovan Mitchell, SG,2019-2020
+Toronto Raptors,3623000,Stanley Johnson, SF,2019-2020
+Minnesota Timberwolves,3581986,Jake Layman, SF,2019-2020
+Detroit Pistons,3569643,Thon Maker, C,2019-2020
+Washington Wizards,3567720,Jerome Robinson, SG,2019-2020
+New York Knicks,3551000,Allonzo Trier, G,2019-2020
+Houston Rockets,3540000,Danuel House Jr., SF,2019-2020
+Indiana Pacers,3529555,Domantas Sabonis, PF,2019-2020
+Brooklyn Nets,3500000,Michael Beasley, F,2019-2020
+Los Angeles Lakers,3500000,DeMarcus Cousins, C,2019-2020
+Indiana Pacers,3500000,T.J. McConnell, PG,2019-2020
+Dallas Mavericks,3500000,Boban Marjanovic, C,2019-2020
+Phoenix Suns,3481986,Dario Saric, PF,2019-2020
+Brooklyn Nets,3481986,Taurean Prince, PF,2019-2020
+Boston Celtics,3458400,Romeo Langford, SG,2019-2020
+Miami Heat,3454080,Bam Adebayo, PF,2019-2020
+Denver Nuggets,3389400,Michael Porter Jr., PF,2019-2020
+Chicago Bulls,3377569,Denzel Valentine, SG,2019-2020
+Minnesota Timberwolves,3321030,Juan Hernangomez, PF,2019-2020
+Detroit Pistons,3285120,Sekou Doumbouya, SF,2019-2020
+Dallas Mavericks,3280920,Justin Jackson, SF,2019-2020
+Washington Wizards,3219480,Troy Brown Jr., SF,2019-2020
+Sacramento Kings,3150000,Yogi Ferrell, PG,2019-2020
+Philadelphia 76ers,3058800,Zhaire Smith, SG,2019-2020
+Orlando Magic,3000000,Khem Birch, PF,2019-2020
+Los Angeles Lakers,3000000,Quinn Cook, PG,2019-2020
+Chicago Bulls,3000000,Ryan Arcidiacono, PG,2019-2020
+New Orleans Pelicans,2964840,Nickeil Alexander-Walker, SG,2019-2020
+Milwaukee Bucks,2961120,D.J. Wilson, PF,2019-2020
+Cleveland Cavaliers,2907143,Cedi Osman, SF,2019-2020
+Milwaukee Bucks,2905800,Donte DiVincenzo, SG,2019-2020
+San Antonio Spurs,2875000,Bryn Forbes, SG,2019-2020
+Indiana Pacers,2816760,Goga Bitadze, C,2019-2020
+Indiana Pacers,2813280,T.J. Leaf, PF,2019-2020
+Los Angeles Lakers,2750000,Alex Caruso, SG,2019-2020
+Minnesota Timberwolves,2731714,Malik Beasley, SG,2019-2020
+San Antonio Spurs,2689920,Luka Samanic, PF,2019-2020
+San Antonio Spurs,2689920,Lonnie Walker IV, SG,2019-2020
+Atlanta Hawks,2686560,John Collins, PF,2019-2020
+Atlanta Hawks,2636280,Kevin Huerter, SG,2019-2020
+Brooklyn Nets,2625718,Caris LeVert, SG,2019-2020
+Memphis Grizzlies,2625000,Marko Guduric, SG,2019-2020
+Atlanta Hawks,2603982,DeAndre' Bembry, SG,2019-2020
+Philadelphia 76ers,2582160,Matisse Thybulle, SG,2019-2020
+Sacramento Kings,2578800,Harry Giles III, C,2019-2020
+Milwaukee Bucks,2564753,Wesley Matthews, SG,2019-2020
+Los Angeles Lakers,2564753,Rajon Rondo, PG,2019-2020
+Atlanta Hawks,2564753,Nene Hilario, C,2019-2020
+Minnesota Timberwolves,2530680,Josh Okogie, SF,2019-2020
+Boston Celtics,2505793,Vincent Poirier, C,2019-2020
+Toronto Raptors,2500000,Rondae Hollis-Jefferson, SF,2019-2020
+San Antonio Spurs,2500000,Manu Ginobili, G,2019-2020
+Memphis Grizzlies,2478840,Brandon Clarke, SF,2019-2020
+Oklahoma City Thunder,2475840,Terrance Ferguson, SF,2019-2020
+Philadelphia 76ers,2445085,Emeka Okafor, C,2019-2020
+Cleveland Cavaliers,2445085,Kendrick Perkins, C,2019-2020
+Memphis Grizzlies,2429400,Grayson Allen, SG,2019-2020
+Boston Celtics,2379840,Grant Williams, PF,2019-2020
+Brooklyn Nets,2376840,Jarrett Allen, C,2019-2020
+Toronto Raptors,2351839,Pascal Siakam, PF,2019-2020
+Portland Trail Blazers,2338847,Skal Labissiere, PF,2019-2020
+Chicago Bulls,2332320,Chandler Hutchison, SF,2019-2020
+Indiana Pacers,2329200,Aaron Holiday, PG,2019-2020
+San Antonio Spurs,2321735,Dejounte Murray, PG,2019-2020
+Atlanta Hawks,2305057,Damian Jones, C,2019-2020
+Oklahoma City Thunder,2284800,Darius Bazley, SF,2019-2020
+Toronto Raptors,2281800,OG Anunoby, SF,2019-2020
+Cleveland Cavaliers,2281800,Ante Zizic, C,2019-2020
+Chicago Bulls,2250000,Luke Kornet, C,2019-2020
+Milwaukee Bucks,2222803,Brandon Jennings, G,2019-2020
+Phoenix Suns,2193480,Ty Jerome, SG,2019-2020
+Golden State Warriors,2177483,Willie Cauley-Stein, C,2019-2020
+Portland Trail Blazers,2149560,Anfernee Simons, SG,2019-2020
+Houston Rockets,2147317,Austin Rivers, PG,2019-2020
+Portland Trail Blazers,2105520,Nassir Little, SF,2019-2020
+Washington Wizards,2063520,Moritz Wagner, SF,2019-2020
+Chicago Bulls,2054856,Sean Kilpatrick, G,2019-2020
+Cleveland Cavaliers,2035800,Dylan Windler, SG,2019-2020
+Sacramento Kings,2033160,Caleb Swanigan, PF,2019-2020
+Oklahoma City Thunder,2028594,Mike Muscala, PF,2019-2020
+Houston Rockets,2028594,Ben McLemore, SF,2019-2020
+Indiana Pacers,2000000,Edmond Sumner, PG,2019-2020
+Minnesota Timberwolves,2000000,Noah Vonleh, PF,2019-2020
+Denver Nuggets,2000000,Torrey Craig, SF,2019-2020
+LA Clippers,1995120,Landry Shamet, SG,2019-2020
+LA Clippers,1977000,Mfiondu Kabengele, PF,2019-2020
+Los Angeles Lakers,1974600,Kyle Kuzma, PF,2019-2020
+Golden State Warriors,1964760,Jordan Poole, SG,2019-2020
+Utah Jazz,1962360,Tony Bradley, C,2019-2020
+San Antonio Spurs,1950600,Keldon Johnson, SF,2019-2020
+San Antonio Spurs,1948080,Derrick White, PG,2019-2020
+Boston Celtics,1937520,Robert Williams III, C,2019-2020
+Minnesota Timberwolves,1925880,Jacob Evans, SG,2019-2020
+Brooklyn Nets,1911600,Dzanan Musa, SG,2019-2020
+Golden State Warriors,1897800,Omari Spellman, PF,2019-2020
+Philadelphia 76ers,1882867,James Ennis III, SF,2019-2020
+Washington Wizards,1845301,Shabazz Napier, PG,2019-2020
+Memphis Grizzlies,1845301,Bruno Caboclo, SF,2019-2020
+Miami Heat,1795015,DeAndre Liggins, G,2019-2020
+Los Angeles Lakers,1750000,Markieff Morris, PF,2019-2020
+Portland Trail Blazers,1737145,Mario Hezonja, SF,2019-2020
+Phoenix Suns,1737145,Cameron Payne, PG,2019-2020
+Milwaukee Bucks,1723050,Pat Connaughton, SG,2019-2020
+New Orleans Pelicans,1702486,Jahlil Okafor, C,2019-2020
+Brooklyn Nets,1699236,Rodions Kurucs, SF,2019-2020
+Phoenix Suns,1698450,Jonah Bolden, PF,2019-2020
+Phoenix Suns,1678854,Cheick Diallo, PF,2019-2020
+Milwaukee Bucks,1678854,Dragan Bender, F,2019-2020
+Charlotte Hornets,1676735,Willy Hernangomez, C,2019-2020
+Chicago Bulls,1656092,Julyan Stone, G,2019-2020
+Chicago Bulls,1656092,MarShon Brooks, G,2019-2020
+New Orleans Pelicans,1655160,Josh Hart, SF,2019-2020
+Utah Jazz,1645357,Georges Niang, SF,2019-2020
+Miami Heat,1645357,Derrick Jones Jr., SF,2019-2020
+Detroit Pistons,1645357,Christian Wood, PF,2019-2020
+Washington Wizards,1645357,Jordan McRae, SG,2019-2020
+Minnesota Timberwolves,1645357,Treveon Graham, SG,2019-2020
+Toronto Raptors,1620564,Isaiah Taylor, G,2019-2020
+Utah Jazz,1620564,Emmanuel Mudiay, PG,2019-2020
+Oklahoma City Thunder,1620564,Nerlens Noel, C,2019-2020
+Sacramento Kings,1620564,Tyler Lydon, F,2019-2020
+Philadelphia 76ers,1620564,Furkan Korkmaz, SG,2019-2020
+Philadelphia 76ers,1620564,Glenn Robinson III, SF,2019-2020
+Philadelphia 76ers,1620564,Raul Neto, PG,2019-2020
+Philadelphia 76ers,1620564,Kyle O'Quinn, C,2019-2020
+Philadelphia 76ers,1620564,Alec Burks, SG,2019-2020
+Orlando Magic,1620564,Michael Carter-Williams, PG,2019-2020
+Brooklyn Nets,1620564,Wilson Chandler, SF,2019-2020
+Milwaukee Bucks,1620564,Kyle Korver, SG,2019-2020
+Miami Heat,1620564,Udonis Haslem, PF,2019-2020
+Los Angeles Lakers,1620564,Jared Dudley, SF,2019-2020
+Los Angeles Lakers,1620564,Dwight Howard, C,2019-2020
+Washington Wizards,1620564,Isaiah Thomas, PG,2019-2020
+LA Clippers,1620564,Patrick Patterson, PF,2019-2020
+Indiana Pacers,1620564,JaKarr Sampson, SF,2019-2020
+Houston Rockets,1620564,Ryan Anderson, PF,2019-2020
+Houston Rockets,1620564,Thabo Sefolosha, SF,2019-2020
+Houston Rockets,1620564,Tyson Chandler, C,2019-2020
+Oklahoma City Thunder,1620564,Justin Patton, C,2019-2020
+Detroit Pistons,1620564,Tim Frazier, PG,2019-2020
+Detroit Pistons,1620564,Joe Johnson, G,2019-2020
+Denver Nuggets,1620564,Gerald Green, SG,2019-2020
+Philadelphia 76ers,1620564,Trey Burke, PG,2019-2020
+Dallas Mavericks,1620564,J.J. Barea, PG,2019-2020
+Cleveland Cavaliers,1620564,Jarell Martin, F,2019-2020
+Memphis Grizzlies,1620564,Jordan Bell, PF,2019-2020
+Chicago Bulls,1620564,Shaquille Harrison, PG,2019-2020
+Atlanta Hawks,1620564,Vince Carter, G,2019-2020
+Charlotte Hornets,1618520,Dwayne Bacon, SG,2019-2020
+Memphis Grizzlies,1618520,Dillon Brooks, SG,2019-2020
+Utah Jazz,1618520,Royce O'Neale, SF,2019-2020
+Oklahoma City Thunder,1618520,Abdel Nader, SF,2019-2020
+New York Knicks,1618520,Damyean Dotson, SG,2019-2020
+Milwaukee Bucks,1618520,Sterling Brown, SG,2019-2020
+New Orleans Pelicans,1618520,Frank Jackson, PG,2019-2020
+Boston Celtics,1618520,Semi Ojeleye, PF,2019-2020
+Orlando Magic,1618420,Wes Iwundu, SF,2019-2020
+Detroit Pistons,1600520,Dwight Buycks, G,2019-2020
+New York Knicks,1599712,Mitchell Robinson, C,2019-2020
+Toronto Raptors,1588231,Chris Boucher, PF,2019-2020
+Toronto Raptors,1588231,Malcolm Miller, SG,2019-2020
+Denver Nuggets,1588231,Monte Morris, PG,2019-2020
+Chicago Bulls,1588231,Antonio Blakeney, G,2019-2020
+Atlanta Hawks,1588231,Tyrone Wallace, SG,2019-2020
+Philadelphia 76ers,1569360,Malachi Richardson, G,2019-2020
+Portland Trail Blazers,1544951,Georgios Papagiannis, C,2019-2020
+Portland Trail Blazers,1544951,Chinanu Onuaku, C,2019-2020
+Indiana Pacers,1544951,Wade Baldwin IV, G,2019-2020
+Detroit Pistons,1544951,Isaiah Whitehead, G,2019-2020
+Chicago Bulls,1544951,Paul Zipser, F,2019-2020
+Orlando Magic,1529007,Amile Jefferson, PF,2019-2020
+Memphis Grizzlies,1512601,Omri Casspi, F,2019-2020
+Toronto Raptors,1512601,Lorenzo Brown, G,2019-2020
+Milwaukee Bucks,1512601,Isaiah Canaan, G,2019-2020
+Miami Heat,1512601,Dwyane Wade, G,2019-2020
+Utah Jazz,1500000,Nigel Williams-Goss, PG,2019-2020
+Oklahoma City Thunder,1500000,Isaiah Roby, SF,2019-2020
+Cleveland Cavaliers,1500000,Alfonzo McKinnie, SF,2019-2020
+Philadelphia 76ers,1455697,Shake Milton, SG,2019-2020
+Sacramento Kings,1445697,Wenyen Gabriel, PF,2019-2020
+Brooklyn Nets,1445697,Theo Pinson, SG,2019-2020
+Milwaukee Bucks,1445697,Thanasis Antetokounmpo, SF,2019-2020
+LA Clippers,1445697,Derrick Walton Jr., G,2019-2020
+Boston Celtics,1445697,Brad Wanamaker, PG,2019-2020
+Brooklyn Nets,1419138,Iman Shumpert, SG,2019-2020
+Charlotte Hornets,1416852,Devonte' Graham, PG,2019-2020
+Memphis Grizzlies,1416852,De'Anthony Melton, SG,2019-2020
+Milwaukee Bucks,1416852,Jemerrio Jones, F,2019-2020
+Oklahoma City Thunder,1416852,Hamidou Diallo, SG,2019-2020
+Oklahoma City Thunder,1416852,Deonte Burton, SG,2019-2020
+San Antonio Spurs,1416852,Chimezie Metu, PF,2019-2020
+Portland Trail Blazers,1416852,Gary Trent Jr., SG,2019-2020
+Phoenix Suns,1416852,Elie Okobo, SF,2019-2020
+Phoenix Suns,1416852,Jevon Carter, PG,2019-2020
+Dallas Mavericks,1416852,Ryan Broekhoff, SG,2019-2020
+Orlando Magic,1416852,Melvin Frazier Jr., SG,2019-2020
+Minnesota Timberwolves,1416852,Jarred Vanderbilt, PF,2019-2020
+Miami Heat,1416852,Duncan Robinson, SG,2019-2020
+Miami Heat,1416852,Kendrick Nunn, SG,2019-2020
+Indiana Pacers,1416852,Alize Johnson, PF,2019-2020
+Houston Rockets,1416852,Isaiah Hartenstein, F,2019-2020
+Detroit Pistons,1416852,Bruce Brown, SG,2019-2020
+Detroit Pistons,1416852,Khyri Thomas, SG,2019-2020
+Detroit Pistons,1416852,Sviatoslav Mykhailiuk, SG,2019-2020
+Minnesota Timberwolves,1416852,Keita Bates-Diop, SF,2019-2020
+Dallas Mavericks,1416852,Jalen Brunson, PG,2019-2020
+New Orleans Pelicans,1416852,Kenrich Williams, SF,2019-2020
+New Orleans Pelicans,1416852,Dairis Bertans, G,2019-2020
+Boston Celtics,1416852,Yante Maten, F,2019-2020
+Washington Wizards,1416842,Isaac Bonga, SF,2019-2020
+Washington Wizards,1416842,Tarik Phillip, G,2019-2020
+Minnesota Timberwolves,1400000,Jaylen Nowell, SG,2019-2020
+Atlanta Hawks,1400000,Bruno Fernando, C,2019-2020
+Memphis Grizzlies,1378242,Dakari Johnson, C,2019-2020
+Utah Jazz,1378242,Kyle Collinsworth, G,2019-2020
+San Antonio Spurs,1378242,Brandon Paul, G,2019-2020
+Milwaukee Bucks,1378242,Jaylen Morris, G,2019-2020
+Miami Heat,1378242,Rodney Purvis, G,2019-2020
+Los Angeles Lakers,1378242,David Stockton, G,2019-2020
+Indiana Pacers,1378242,Ike Anigbogu, C,2019-2020
+Houston Rockets,1378242,Zhou Qi, C,2019-2020
+Houston Rockets,1378242,Aaron Jackson, F,2019-2020
+Portland Trail Blazers,1364204,Carmelo Anthony, PF,2019-2020
+Atlanta Hawks,1349464,Jabari Bird, G,2019-2020
+San Antonio Spurs,1349383,Ben Moore, F,2019-2020
+Houston Rockets,1349383,James Nunnally, G,2019-2020
+Cleveland Cavaliers,1290960,Kevin Porter Jr., SG,2019-2020
+Boston Celtics,1228026,Carsen Edwards, PG,2019-2020
+Washington Wizards,1187862,Okaro White, F,2019-2020
+Charlotte Hornets,1173310,Cody Martin, SF,2019-2020
+Washington Wizards,1052909,Gary Payton II, PG,2019-2020
+Denver Nuggets,1042584,Nick Young, G,2019-2020
+Washington Wizards,1000000,Admiral Schofield, SG,2019-2020
+LA Clippers,1000000,Terance Mann, SG,2019-2020
+Washington Wizards,948580,Ron Baker, G,2019-2020
+Brooklyn Nets,903111,David Nwaba, SG,2019-2020
+Charlotte Hornets,898310,Jalen McDaniels, PF,2019-2020
+Charlotte Hornets,898310,Caleb Martin, SF,2019-2020
+Toronto Raptors,898310,Dewan Hernandez, C,2019-2020
+Toronto Raptors,898310,Terence Davis, SG,2019-2020
+Toronto Raptors,898310,Matt Thomas, SG,2019-2020
+Washington Wizards,898310,Justin Robinson, PG,2019-2020
+Utah Jazz,898310,Miye Oni, SG,2019-2020
+Utah Jazz,898310,Stanton Kidd, SF,2019-2020
+Sacramento Kings,898310,Justin James, SG,2019-2020
+Phoenix Suns,898310,Jalen Lecque, PG,2019-2020
+New York Knicks,898310,Ignas Brazdeikis, SF,2019-2020
+Brooklyn Nets,898310,Nicolas Claxton, PF,2019-2020
+Minnesota Timberwolves,898310,Naz Reid, C,2019-2020
+Miami Heat,898310,KZ Okpala, SF,2019-2020
+Los Angeles Lakers,898310,Talen Horton-Tucker, SG,2019-2020
+Golden State Warriors,898310,Alen Smailagic, PF,2019-2020
+Golden State Warriors,898310,Eric Paschall, PF,2019-2020
+Denver Nuggets,898310,Vlatko Cancar, SF,2019-2020
+Chicago Bulls,898310,Daniel Gafford, PF,2019-2020
+Chicago Bulls,898310,Max Strus, SG,2019-2020
+Boston Celtics,898310,Javonte Green, SG,2019-2020
+Golden State Warriors,842327,Damion Lee, SG,2019-2020
+Orlando Magic,838464,Isaiah Briscoe, G,2019-2020
+Utah Jazz,746054,Juwan Morgan, SF,2019-2020
+Brooklyn Nets,654469,Timothe Luwawu-Cabarrot, SG,2019-2020
+Golden State Warriors,654469,Marquese Chriss, C,2019-2020
+Charlotte Hornets,604278,Marvin Williams, PF,2019-2020
+Charlotte Hornets,595122,Michael Kidd-Gilchrist, SF,2019-2020
+Utah Jazz,578573,Rayjon Tucker, SG,2019-2020
+Houston Rockets,563347,Chris Clemons, PG,2019-2020
+Orlando Magic,555409,Gary Clark, PF,2019-2020
+Atlanta Hawks,522738,Brandon Goodwin, PG,2019-2020
+LA Clippers,512721,Reggie Jackson, PG,2019-2020
+San Antonio Spurs,512721,DeMarre Carroll, SF,2019-2020
+Washington Wizards,482144,Anzejs Pasecniks, C,2019-2020
+Miami Heat,466918,Chris Silva, PF,2019-2020
+Utah Jazz,439475,Jeff Green, PF,2019-2020
+Los Angeles Lakers,384541,Troy Daniels, SG,2019-2020
+Miami Heat,375385,Dion Waiters, SG,2019-2020
+Philadelphia 76ers,350189,Norvel Pelle, SF,2019-2020
+Golden State Warriors,350189,Juan Toscano-Anderson, SF,2019-2020
+Golden State Warriors,350189,Ky Bowman, PG,2019-2020
+San Antonio Spurs,245686,Tyler Zeller, C,2019-2020
+Phoenix Suns,208509,Jimmer Fredette, G,2019-2020
+Memphis Grizzlies,197933,Jontay Porter, PF,2019-2020
+Memphis Grizzlies,183115,Anthony Tolliver, PF,2019-2020
+Phoenix Suns,183115,Tyler Johnson, SG,2019-2020
+Oklahoma City Thunder,155647,Luguentz Dort, SG,2019-2020

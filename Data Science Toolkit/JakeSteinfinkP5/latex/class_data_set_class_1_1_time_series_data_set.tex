@@ -1,0 +1,108 @@
+\hypertarget{class_data_set_class_1_1_time_series_data_set}{}\doxysection{Data\+Set\+Class.\+Time\+Series\+Data\+Set Class Reference}
+\label{class_data_set_class_1_1_time_series_data_set}\index{DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}}
+Inheritance diagram for Data\+Set\+Class.\+Time\+Series\+Data\+Set\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_data_set_class_1_1_time_series_data_set}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_time_series_data_set_aa514314eca233c6aa4f6098e4ec00eb2}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, filename)
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_time_series_data_set_a7b67f4623470f13d906beddef93ebfa8}{clean}} (self, filter\+\_\+size=3, Columns=\char`\"{}\char`\"{})
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_time_series_data_set_a3123aef239d16891223b9859ad2cbb9c}{explore}} (self, Columns)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_data_set_class_1_1_time_series_data_set_ac3c45c6751cdb7e23cf8dde8f6f919be}{data}}
+\begin{DoxyCompactList}\small\item\em VIZ 1. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_time_series_data_set_aa514314eca233c6aa4f6098e4ec00eb2}\label{class_data_set_class_1_1_time_series_data_set_aa514314eca233c6aa4f6098e4ec00eb2}} 
+\index{DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Time\+Series\+Data\+Set.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+filename : file to be used
+
+Makes use of the __readFromCSV(self,filename)
+method to instantiate the data object from the SuperClass DataSet()
+
+Returns
+-------
+self.data: the data object is stored in the .data attribute\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{class_data_set_class_1_1_data_set_a86602a37d7f358715a8bb008adfddd84}{Data\+Set\+Class.\+Data\+Set}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_time_series_data_set_a7b67f4623470f13d906beddef93ebfa8}\label{class_data_set_class_1_1_time_series_data_set_a7b67f4623470f13d906beddef93ebfa8}} 
+\index{DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}!clean@{clean}}
+\index{clean@{clean}!DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}}
+\doxysubsubsection{\texorpdfstring{clean()}{clean()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Time\+Series\+Data\+Set.\+clean (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filter\+\_\+size = {\ttfamily 3},  }\item[{}]{Columns = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}TimeSeriesDataSet.clean() applies a median filter to the data to reduce
+noise. The function iteratively creates a list of the (filter_size-1)/2
+preceding and following points, takes the median and returns that as the value
+
+
+Parameters
+---------
+filter_size: Determines size of the median filter, must be odd;
+default size is 3
+
+Columns: Columns for the filter to be applied to; default is all
+
+Creates
+-------
+Edits .data to be a clean (noise reduced) version of the dataframe.\end{DoxyVerb}
+ \mbox{\Hypertarget{class_data_set_class_1_1_time_series_data_set_a3123aef239d16891223b9859ad2cbb9c}\label{class_data_set_class_1_1_time_series_data_set_a3123aef239d16891223b9859ad2cbb9c}} 
+\index{DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}!explore@{explore}}
+\index{explore@{explore}!DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}}
+\doxysubsubsection{\texorpdfstring{explore()}{explore()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Time\+Series\+Data\+Set.\+explore (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{Columns }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+--------------
+Columns: list of two column names [x,y] to visualize; x should be a
+          time variable that can be converted to a datetime object;
+          y should be the numeric variable of interest
+
+
+Returns + Displays
+-------
+Viz1:  line chart of the y variable over time
+Viz2:  line chart of the Rate of change of the y variable over time\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_time_series_data_set_ac3c45c6751cdb7e23cf8dde8f6f919be}\label{class_data_set_class_1_1_time_series_data_set_ac3c45c6751cdb7e23cf8dde8f6f919be}} 
+\index{DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}!data@{data}}
+\index{data@{data}!DataSetClass.TimeSeriesDataSet@{DataSetClass.TimeSeriesDataSet}}
+\doxysubsubsection{\texorpdfstring{data}{data}}
+{\footnotesize\ttfamily Data\+Set\+Class.\+Time\+Series\+Data\+Set.\+data}
+
+
+
+VIZ 1. 
+
+Making line chart of x vs. y variable
+
+Making time variable a datetimes object
+
+Sort variable by time in ascending order 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Data\+Set\+Class.\+py\end{DoxyCompactItemize}

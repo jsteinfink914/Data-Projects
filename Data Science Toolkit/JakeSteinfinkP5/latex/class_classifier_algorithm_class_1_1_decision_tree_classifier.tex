@@ -1,0 +1,132 @@
+\hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier}{}\doxysection{Classifier\+Algorithm\+Class.\+Decision\+Tree\+Classifier Class Reference}
+\label{class_classifier_algorithm_class_1_1_decision_tree_classifier}\index{ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}}
+Inheritance diagram for Classifier\+Algorithm\+Class.\+Decision\+Tree\+Classifier\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.937716cm]{class_classifier_algorithm_class_1_1_decision_tree_classifier}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{class_classifier_algorithm_class_1_1_decision_tree_classifier_adc933a71694d5596c93f7978116c9147}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self)
+\item 
+def \mbox{\hyperlink{class_classifier_algorithm_class_1_1_decision_tree_classifier_a91a3b18bc4a2b9cb9a022a482992a96f}{train}} (self, traindata, trainlabels, max\+\_\+depth=5, min\+\_\+size=10)
+\item 
+def \mbox{\hyperlink{class_classifier_algorithm_class_1_1_decision_tree_classifier_aeb659502cc181646d5e58b1e75ac1941}{test}} (self, testdata)
+\item 
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_a2d91e7c5f6ebfe1ecb06ed266469b899}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_a2d91e7c5f6ebfe1ecb06ed266469b899}} 
+def {\bfseries build\+\_\+tree} (self, node, max\+\_\+depth, min\+\_\+size)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_a73ecf0ebb3d919510a3295d2b83d0cfb}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_a73ecf0ebb3d919510a3295d2b83d0cfb}} 
+{\bfseries train}
+\item 
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_ab3dc6c444f0dc7ff33ef68b69cb1ecb8}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_ab3dc6c444f0dc7ff33ef68b69cb1ecb8}} 
+{\bfseries train\+Labels}
+\item 
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_a5412050a7734dfaa9f9fde67b0460ff2}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_a5412050a7734dfaa9f9fde67b0460ff2}} 
+{\bfseries classes}
+\item 
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_a65aff846e0a8cd1c4b17aa76305cc0b2}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_a65aff846e0a8cd1c4b17aa76305cc0b2}} 
+{\bfseries T}
+\begin{DoxyCompactList}\small\item\em Initializes root node of tree. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_a4b4ba7f76c0d8166c59be0c49493761e}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_a4b4ba7f76c0d8166c59be0c49493761e}} 
+{\bfseries test}
+\begin{DoxyCompactList}\small\item\em Resetting the index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_classifier_algorithm_class_1_1_decision_tree_classifier_ab1d1b3073dfd2231661b29240a8ac4d5}{Predicted\+\_\+\+Labels}}
+\begin{DoxyCompactList}\small\item\em Empty list to store predictions. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_ad51f42c17d3842b67df839b2bec1d66b}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_ad51f42c17d3842b67df839b2bec1d66b}} 
+{\bfseries best\+\_\+split}
+\begin{DoxyCompactList}\small\item\em Calls the \+\_\+\+\_\+get\+\_\+split() method to obtain the optimal split for the node. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_adc933a71694d5596c93f7978116c9147}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_adc933a71694d5596c93f7978116c9147}} 
+\index{ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Classifier\+Algorithm\+Class.\+Decision\+Tree\+Classifier.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Returns
+--------
+None.\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{class_classifier_algorithm_class_1_1_classifier_algorithm_af261a7d6e615ae7ccd293355bc79250f}{Classifier\+Algorithm\+Class.\+Classifier\+Algorithm}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_aeb659502cc181646d5e58b1e75ac1941}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_aeb659502cc181646d5e58b1e75ac1941}} 
+\index{ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}!test@{test}}
+\index{test@{test}!ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}}
+\doxysubsubsection{\texorpdfstring{test()}{test()}}
+{\footnotesize\ttfamily def Classifier\+Algorithm\+Class.\+Decision\+Tree\+Classifier.\+test (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{testdata }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+testdata : Unlabeled data seeking prediction labels
+
+Returns
+-------
+self.Predicted_Labels: Predicted labels created by running through decision tree;
+                        returns a dictionary with each class and the confidence that the item
+                        belongs to that class\end{DoxyVerb}
+ \mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_a91a3b18bc4a2b9cb9a022a482992a96f}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_a91a3b18bc4a2b9cb9a022a482992a96f}} 
+\index{ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}!train@{train}}
+\index{train@{train}!ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}}
+\doxysubsubsection{\texorpdfstring{train()}{train()}}
+{\footnotesize\ttfamily def Classifier\+Algorithm\+Class.\+Decision\+Tree\+Classifier.\+train (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{traindata,  }\item[{}]{trainlabels,  }\item[{}]{max\+\_\+depth = {\ttfamily 5},  }\item[{}]{min\+\_\+size = {\ttfamily 10} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Creates a decision tree using gini index as criteria for splitting.
+Nodes of the tree will store the indexes of the data they house as the key,
+and the associated training labels as the payload. A new attribute called decision
+will either store a dictionary of the split that occurs at the node, or,
+if a terminal node, it will return the label that is most represented.
+
+Parameters
+----------
+traindata : Unlabeled Training data for the algorithm
+trainlabels : Labels belonging to the train data
+max_depth : TYPE, optional depth of the tree. The default is 5.
+min_size : TYPE, optional; minimum number of points required for a split. The default is 10.
+
+Returns
+-------
+Printed version of the decision tree to the console.
+
+Attributes Created
+------------------
+self.train: Train data
+self.trainLabels: Train Labels
+self.T: Decision Tree
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{class_classifier_algorithm_class_1_1_classifier_algorithm_a5d4425436c35c585fd406fc65c287f3a}{Classifier\+Algorithm\+Class.\+Classifier\+Algorithm}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1_decision_tree_classifier_ab1d1b3073dfd2231661b29240a8ac4d5}\label{class_classifier_algorithm_class_1_1_decision_tree_classifier_ab1d1b3073dfd2231661b29240a8ac4d5}} 
+\index{ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}!Predicted\_Labels@{Predicted\_Labels}}
+\index{Predicted\_Labels@{Predicted\_Labels}!ClassifierAlgorithmClass.DecisionTreeClassifier@{ClassifierAlgorithmClass.DecisionTreeClassifier}}
+\doxysubsubsection{\texorpdfstring{Predicted\_Labels}{Predicted\_Labels}}
+{\footnotesize\ttfamily Classifier\+Algorithm\+Class.\+Decision\+Tree\+Classifier.\+Predicted\+\_\+\+Labels}
+
+
+
+Empty list to store predictions. 
+
+For each row in the test data
+
+Predict what label it should have and add to list
+
+Create and return the Predicted\+\_\+\+Labels Attribute 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Classifier\+Algorithm\+Class.\+py\end{DoxyCompactItemize}

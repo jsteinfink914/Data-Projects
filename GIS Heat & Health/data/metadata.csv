@@ -1,0 +1,5 @@
+file_name,online_link,file_size_mb,crs_epsg,number_of_fields_or_layers,number_of_features_or_cells,extent_xmin,extent_xmax,extent_ymin,extent_ymax,description_of_data
+ACS_Economic_Characteristics_DC_Census_Tract.geojson,https://opendata.dc.gov/datasets/DCGIS::acs-economic-characteristics-dc-census-tract/explore?location=38.890465%2C-77.031102%2C12.00&showTable=true,2.24,4326,154,206,-77.11976,-76.9094,38.79165,38.99585,Economic characteristics by DC census tract 
+Heat_Sensitivity_Exposure_Index.geojson,https://opendata.dc.gov/datasets/DCGIS::heat-sensitivity-exposure-index/explore?location=38.893619%2C-77.014562%2C12.00,1.79,4326,33,206,-77.11976,-76.9094,38.79165,38.99585,Heat Sensitiity and related variables for each DC census tract
+dc_buildings,File from Quiz 2 repository in class,5.56,4326,15,236,-77.11499,-76.9099,38.81245,38.99504,Point shapefile of Buildings in DC - the same file used in class for Quiz 2
+Cooling_Centers,https://opendata.dc.gov/datasets/cooling-centers-district-of-columbia/explore?location=38.903124%2C-77.008453%2C12.55,0.126,4326,2,36934,-77.10457,-76.91236,38.81889,38.98466,Point shapefile of Cooling Centers used in DC

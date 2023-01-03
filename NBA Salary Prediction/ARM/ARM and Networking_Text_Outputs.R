@@ -1,0 +1,245 @@
+##Importing Necessary Libraries
+library(arules)
+library(arulesViz)
+library(dplyr)
+library(twitteR)
+library(ROAuth)
+library(ggplot2)
+library(tokenizers)
+library(stopwords)
+library(rtweet)
+library(plyr)
+library(stringr)
+library(rtweet)
+library(networkD3)
+library(kableExtra)
+library(igraph)
+library(visNetwork)
+
+##ALL SEARCHES
+##Converting to market basket format
+
+Trans_all_searches<-read.transactions('Twitter_csv_files/all_searches_clean.csv',format='basket',sep=',')
+##inspect(Trans_all_searches)
+summary(Trans_all_searches)
+##Using apriori algorithm 
+Rules<-arules::apriori(Trans_all_searches,parameter=list(support=.04,confidence=.05,
+                                                         minlen=2))
+kbl(inspect(Rules)) %>% kable_classic(lightable_options = 'striped')
+
+##Sorting rules by support
+
+SortedRules_Sup<-sort(Rules,by='support',decreasing=TRUE)
+##Sorting by confidence
+SortedRules_conf<-sort(Rules,by='confidence',decreasing=TRUE)
+##Sorting by Lift
+SortedRules_lift<-sort(Rules,by='lift',decreasing=TRUE)
+
+##Plotting table using kable package and styling
+kbl(inspect(SortedRules_Sup[1:15]))  %>% kable_classic(lightable_options = 'striped')
+
+kbl(inspect(SortedRules_conf[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+kbl(inspect(SortedRules_lift[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Network Graph
+plot(SortedRules_Sup,measure='support',shading='lift',engine='interactive',
+     method='graph')
+
+
+##CLUSTER1
+
+Trans_allstar_legend_superstar<-read.transactions('Twitter_csv_files/allstar_legend_superstar_clean.csv',
+                                                  format='basket',sep=',')
+#3inspect(Trans_allstar_legend_superstar)
+summary(Trans_allstar_legend_superstar)
+##Using apriori algorithm 
+Rules1<-arules::apriori(Trans_allstar_legend_superstar,parameter=list(support=.02,confidence=.05,
+                                                                      minlen=2))
+inspect(Rules1)
+##Sorting rules by support
+SortedRules_Sup_allstar_legend_superstar<-sort(Rules1,by='support',decreasing=TRUE)
+##Sorting by confidence
+SortedRules_conf_allstar_legend_superstar<-sort(Rules1,by='confidence',decreasing=TRUE)
+##Sorting by Lift
+SortedRules_lift_allstar_legend_superstar<-sort(Rules1,by='lift',decreasing=TRUE)
+
+##Plotting table using kable package and styling
+kbl(inspect(SortedRules_Sup_allstar_legend_superstar[1:15]))  %>% kable_classic(lightable_options = 'striped')
+kbl(inspect(SortedRules_conf_allstar_legend_superstar[1:15])) %>% kable_classic(lightable_options = 'striped')
+kbl(inspect(SortedRules_lift_allstar_legend_superstar[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Plotting interactive graph
+plot(SortedRules_Sup_allstar_legend_superstar[1:15],measure='support',shading='lift',engine='interactive',
+     method='graph')
+
+##Using visNetwork
+
+##BUilding Nodes and edges
+##Using aviz DATAFRAME function
+Rules_DF<-DATAFRAME(SortedRules_conf_allstar_legend_superstar[1:15])
+##Isolating nodes 
+Rules_DF$LHS<-as.character(Rules_DF$LHS)
+Rules_DF$RHS<-as.character(Rules_DF$RHS)
+##Removing {}
+Rules_DF[]<-lapply(Rules_DF,gsub,pattern='[{]',replacement='')
+Rules_DF[]<-lapply(Rules_DF,gsub,pattern='[}]',replacement='')
+edges1<-Map(c,Rules_DF$LHS,Rules_DF$RHS)
+edges2<-purrr::flatten(edges1)
+edges3<-as.character(edges2)
+
+##PLotting igraph Graph for confidence
+plot(graph(edges=edges3))
+
+##Building edgeList nodesList and plotting with vizNetwork
+Rules_DF<-DATAFRAME(SortedRules_lift_allstar_legend_superstar[1:15])
+##Isolating nodes 
+Rules_DF$LHS<-as.character(Rules_DF$LHS)
+Rules_DF$RHS<-as.character(Rules_DF$RHS)
+##Removing {}
+Rules_DF[]<-lapply(Rules_DF,gsub,pattern='[{]',replacement='')
+Rules_DF[]<-lapply(Rules_DF,gsub,pattern='[}]',replacement='')
+edges1<-Map(c,Rules_DF$LHS,Rules_DF$RHS)
+edges2<-purrr::flatten(edges1)
+edges3<-as.character(edges2)
+edgeList<-data.frame(from=Rules_DF$LHS,to=Rules_DF$RHS,label=as.character(round(as.numeric(Rules_DF$lift),2)))
+nodesList<-data.frame(id=unique(edges3),label=unique(edges3))
+visNetwork(nodes=nodesList,edges=edgeList)
+
+
+##STAR
+
+Trans_star<-read.transactions('Twitter_csv_files/nba_star_clean.csv',
+                              format='basket',sep=',')
+inspect(Trans_star)
+summary(Trans_star)
+##Using apriori algorithm 
+Rules2<-arules::apriori(Trans_star,parameter=list(support=.05,confidence=.05,
+                                                  minlen=2))
+inspect(Rules2)
+##Sorting rules by support
+SortedRules_Sup_star<-sort(Rules2,by='support',decreasing=TRUE)
+kbl(inspect(SortedRules_Sup_star[1:15]))  %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by confidence
+SortedRules_conf_star<-sort(Rules2,by='confidence',decreasing=TRUE)
+kbl(inspect(SortedRules_conf_star[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by Lift
+SortedRules_lift_star<-sort(Rules2,by='lift',decreasing=TRUE)
+kbl(inspect(SortedRules_lift_star[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Plotting interactive graph
+plot(SortedRules_Sup_star[1:15],measure='support',shading='lift',engine='interactive',
+     method='graph')
+
+
+
+
+##MVP
+
+Trans_mvp<-read.transactions('Twitter_csv_files/nba_mvp_clean.csv',
+                             format='basket',sep=',')
+inspect(Trans_mvp)
+summary(Trans_mvp)
+##Using apriori algorithm 
+Rules3<-arules::apriori(Trans_mvp,parameter=list(support=.05,confidence=.05,
+                                                 minlen=2))
+inspect(Rules3)
+##Sorting rules by support
+SortedRules_Sup_mvp<-sort(Rules3,by='support',decreasing=TRUE)
+kbl(inspect(SortedRules_Sup_mvp[1:15]))  %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by confidence
+SortedRules_conf_mvp<-sort(Rules3,by='confidence',decreasing=TRUE)
+kbl(inspect(SortedRules_conf_mvp[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by Lift
+SortedRules_lift_mpv<-sort(Rules3,by='lift',decreasing=TRUE)
+kbl(inspect(SortedRules_lift_allstar_legend_superstar[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Plotting interactive graph
+plot(SortedRules_Sup_mvp[1:15],measure='support',shading='lift',engine='interactive',
+     method='graph')
+
+##ALLSTAR
+Trans_allstar<-read.transactions('Twitter_csv_files/nba_allstar_clean.csv',
+                                 format='basket',sep=',')
+inspect(Trans_allstar)
+summary(Trans_allstar)
+##Using apriori algorithm 
+Rules4<-arules::apriori(Trans_allstar,parameter=list(support=.1,confidence=.1,
+                                                     minlen=2))
+inspect(Rules4)
+##Sorting rules by support
+SortedRules_Sup_allstar<-sort(Rules4,by='support',decreasing=TRUE)
+kbl(inspect(SortedRules_Sup_allstar[1:15]))  %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by confidence
+SortedRules_conf_allstar<-sort(Rules4,by='confidence',decreasing=TRUE)
+kbl(inspect(SortedRules_conf_allstar[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by Lift
+SortedRules_lift_allstar<-sort(Rules4,by='lift',decreasing=TRUE)
+kbl(inspect(SortedRules_lift_allstar[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Plotting interactive graph
+plot(SortedRules_Sup_allstar[1:15],measure='support',shading='lift',engine='interactive',
+     method='graph')
+
+
+##LEGEND
+Trans_legend<-read.transactions('Twitter_csv_files/nba_legend_clean.csv',
+                                format='basket',sep=',')
+inspect(Trans_legend)
+summary(Trans_legend)
+##Using apriori algorithm 
+Rules5<-arules::apriori(Trans_legend,parameter=list(support=.05,confidence=.05,
+                                                    minlen=2))
+inspect(Rules5)
+##Sorting rules by support
+SortedRules_Sup_legend<-sort(Rules5,by='support',decreasing=TRUE)
+kbl(inspect(SortedRules_Sup_legend[1:15]))  %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by confidence
+SortedRules_conf_legend<-sort(Rules5,by='confidence',decreasing=TRUE)
+kbl(inspect(SortedRules_conf_legend[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by Lift
+SortedRules_lift_legend<-sort(Rules5,by='lift',decreasing=TRUE)
+kbl(inspect(SortedRules_lift_legend[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Plotting interactive graph
+plot(SortedRules_Sup_legend[1:50],measure='support',shading='lift',engine='interactive',
+     method='graph')
+
+
+
+##SUPERSTAR
+Trans_superstar<-read.transactions('Twitter_csv_files/nba_superstar_clean.csv',
+                                   format='basket',sep=',')
+inspect(Trans_superstar)
+summary(Trans_superstar)
+##Using apriori algorithm 
+Rules6<-arules::apriori(Trans_superstar,parameter=list(support=.1,confidence=.1,
+                                                       minlen=2))
+inspect(Rules6)
+##Sorting rules by support
+SortedRules_Sup_superstar<-sort(Rules6,by='support',decreasing=TRUE)
+kbl(inspect(SortedRules_Sup_superstar[1:15]))  %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by confidence
+SortedRules_conf_superstar<-sort(Rules6,by='confidence',decreasing=TRUE)
+kbl(inspect(SortedRules_conf_superstar[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Sorting by Lift
+SortedRules_lift_superstar<-sort(Rules6,by='lift',decreasing=TRUE)
+kbl(inspect(SortedRules_lift_superstar[1:15])) %>% kable_classic(lightable_options = 'striped')
+
+##Plotting interactive graph
+plot(SortedRules_Sup_superstar,measure='support',shading='lift',engine='interactive',
+     method='graph')
+
+
+
+

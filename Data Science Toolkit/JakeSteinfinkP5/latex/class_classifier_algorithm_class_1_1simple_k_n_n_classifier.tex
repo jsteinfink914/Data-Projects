@@ -1,0 +1,90 @@
+\hypertarget{class_classifier_algorithm_class_1_1simple_k_n_n_classifier}{}\doxysection{Classifier\+Algorithm\+Class.\+simple\+KNNClassifier Class Reference}
+\label{class_classifier_algorithm_class_1_1simple_k_n_n_classifier}\index{ClassifierAlgorithmClass.simpleKNNClassifier@{ClassifierAlgorithmClass.simpleKNNClassifier}}
+Inheritance diagram for Classifier\+Algorithm\+Class.\+simple\+KNNClassifier\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_classifier_algorithm_class_1_1simple_k_n_n_classifier}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a4d8945516fb01b0b4605d2870888d5c5}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self)
+\item 
+def \mbox{\hyperlink{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a6273596a02ba3f958ec689fead876e29}{test}} (self, test\+Data, test\+Labels, k=3)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a697f2af2da717affa49c8dc40835ffa2}\label{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a697f2af2da717affa49c8dc40835ffa2}} 
+{\bfseries test\+Labels}
+\item 
+\mbox{\hyperlink{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a2fe079445be7170352365d67edafe21a}{Predicted\+\_\+\+Labels}}
+\begin{DoxyCompactList}\small\item\em Empty list to store predicted labels. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a4d8945516fb01b0b4605d2870888d5c5}\label{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a4d8945516fb01b0b4605d2870888d5c5}} 
+\index{ClassifierAlgorithmClass.simpleKNNClassifier@{ClassifierAlgorithmClass.simpleKNNClassifier}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!ClassifierAlgorithmClass.simpleKNNClassifier@{ClassifierAlgorithmClass.simpleKNNClassifier}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Classifier\+Algorithm\+Class.\+simple\+KNNClassifier.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Largely vacuous, simpliy initiates as a ClassifierAlgorithm object
+
+Returns
+-------
+None\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{class_classifier_algorithm_class_1_1_classifier_algorithm_af261a7d6e615ae7ccd293355bc79250f}{Classifier\+Algorithm\+Class.\+Classifier\+Algorithm}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a6273596a02ba3f958ec689fead876e29}\label{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a6273596a02ba3f958ec689fead876e29}} 
+\index{ClassifierAlgorithmClass.simpleKNNClassifier@{ClassifierAlgorithmClass.simpleKNNClassifier}!test@{test}}
+\index{test@{test}!ClassifierAlgorithmClass.simpleKNNClassifier@{ClassifierAlgorithmClass.simpleKNNClassifier}}
+\doxysubsubsection{\texorpdfstring{test()}{test()}}
+{\footnotesize\ttfamily def Classifier\+Algorithm\+Class.\+simple\+KNNClassifier.\+test (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{test\+Data,  }\item[{}]{test\+Labels,  }\item[{}]{k = {\ttfamily 3} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Function takes training data and associated labels and predicts
+labels based on the training data. This function should be run after the
+train function.
+
+Parameters
+-----------
+k: Number of neightbords to look for when determining label
+
+
+Returns as attribute
+-------------------
+self.testData: testdata
+self.testLabels: Labels associated with the test data
+
+Returns
+-------
+self.PredictedLabels: dictionary of predicted labels and associated likelohoods
+                        for the test data\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a2fe079445be7170352365d67edafe21a}\label{class_classifier_algorithm_class_1_1simple_k_n_n_classifier_a2fe079445be7170352365d67edafe21a}} 
+\index{ClassifierAlgorithmClass.simpleKNNClassifier@{ClassifierAlgorithmClass.simpleKNNClassifier}!Predicted\_Labels@{Predicted\_Labels}}
+\index{Predicted\_Labels@{Predicted\_Labels}!ClassifierAlgorithmClass.simpleKNNClassifier@{ClassifierAlgorithmClass.simpleKNNClassifier}}
+\doxysubsubsection{\texorpdfstring{Predicted\_Labels}{Predicted\_Labels}}
+{\footnotesize\ttfamily Classifier\+Algorithm\+Class.\+simple\+KNNClassifier.\+Predicted\+\_\+\+Labels}
+
+
+
+Empty list to store predicted labels. 
+
+For each row in the test data...
+
+Append to the list the label computed in the \+\_\+\+\_\+prediction function
+
+Assign labels to object attribute and return 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Classifier\+Algorithm\+Class.\+py\end{DoxyCompactItemize}

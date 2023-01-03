@@ -1,0 +1,540 @@
+library(ggplot2)
+library(reshape2)
+library(corrplot)
+library(ggcorrplot)
+DF<-read.csv('DF_with_experience.csv',na.strings = c(''," "))
+head(DF,n=15)
+str(DF)
+ColNames<-names(DF)
+for (name in 1:length(ColNames)){
+  cat(ColNames[name],"\n")
+}
+(NumColumns<-ncol(DF))
+(NumRows<-nrow(DF))
+##Drop irrelevant columns
+DF<-subset(DF,select=-c(team_id,id,sr_id,coach_ejections,
+                        coach_tech_fouls,name_suffix,
+                        birthdate,combined,rookie_year))
+
+##Many of the columns specifically regarding offensive
+##stats are broken down into points, attempts, made attempts
+##and %made. Having all of these is unnecessary as all information
+##can be retained solely with %made and made attempts. Additionally, 
+##many of the stats are either per game or total stats. As long as
+##Games played is retained, there is no information loss by removing the
+##cumulative stats. Also, columns like assists and turnovers can be removed
+##without issue by keeping the assist to turnover ratio column.
+DF<-subset(DF,select = -c(field_goals_att,two_points_att,three_points_att,
+                          free_throws_att,offensive_rebounds,defensive_rebounds,
+                          assists,turnovers,points_in_paint,points_in_paint_att,
+                          fast_break_pts,fast_break_att, second_chance_pts,
+                          second_chance_att))
+
+
+
+##Can combine plus minus column into one column called plus-minus
+DF$plus_minus=DF$plus-DF$minus
+##Dropping plus and minus columns
+DF<-subset(DF,select = -c(plus,minus))
+
+
+##Checking for missing values
+sapply(DF, function(x) sum(is.na(x)))
+
+
+##Many of the columns have only 5 missing values, are they from the same
+##rows?
+sapply(DF, function(x) which(is.na(x),arr.ind=TRUE))
+
+##Yes! Indexes 1211, 1270, 1757, 2256, and 3212 have many missing values
+##Drop these rows
+
+DF<-DF[-c(1211,1270,1757,2256,3212),]
+
+##Check if this worked
+(sapply(DF, function(x) sum(is.na(x))))
+##Yes. Which are the problem columns?
+missing_columns<-(sapply(DF, function(x) which(sum(is.na(x))>0)))
+##Primary Position, ejections, foulouts, fast_break_pct,second_chance_pct
+##2k_Ratings,Salary,All_NBA, All_Nba_team, and plus_minus
+
+##Investigate one at a time
+table(DF$primary_position)
+(indexes_position<-which(is.na(DF$primary_position),arr.ind=TRUE))
+##Check out the 2 rows
+(DF[c(3082,3322),])
+##Primary Postions are missing but overall position indicates where they play
+##Both played minimal games and did not have a significant role on their team
+##It is safe to assign 'SG to the guard and 'PF' to the forward
+DF[3082,"primary_position"]<-'SG'
+DF[3322,'primary_position']<-'PF'
+sum(is.na(DF$primary_position))
+##Now that primary_position is clean, it is safe to drop the position column
+DF<-subset(DF,select=-c(position))
+
+##Lets look at ejections
+table(DF$ejections)
+hist(DF$ejections, main='Ejections', xlab='ejections',col='black')
+##This column is simply messed up, the vast majority of the inputs should be
+##0 and all should be an integer. It appears that the entries after 2015 are
+##accurate. However, this column is unimportant in that ejections are relatively 
+##random and and pattern of aggressive behavior that could be important will be
+##captured in tech fouls, fouls, and flagrant fouls
+DF<-subset(DF,select=-c(ejections))
+
+##Look at foulouts
+table(DF$foulouts)
+hist(DF$foulouts)
+##Same deal and reasoning as ejections, this can be dropped too
+DF<-subset(DF,select=-c(foulouts))
+
+##Now for fast_break_pct
+table(DF$fast_break_pct)
+hist(DF$fast_break_pct,main='Fast Break Pct', xlab='Fast Break Pct', 
+     col='pink')
+##Something is off, there are too many 0% values
+table(DF$fast_break_made)
+hist(DF$fast_break_made,col='blue')
+##Confirmed something is off. Time to look at the data visually
+
+##OK.So for 2016 and before, points_in_paint_made/pct,
+##fouls_drawn, offensive_fouls, fast_break_made/pct,
+##second_chance_made/pct, and plus_minus all appear to not be collected
+##This leaves 2 options, delete rows pre-2017 or delete these columns.
+##Fortunately, most of these can probably be dropped with no issue. 
+
+##To make sure, lets take a sample of the data from 2017 and beyond and look
+##at correlations
+
+DFsample<-DF[DF$year>2016,]
+##For the correlations, have to remove the non-numeric columns and ones with
+##a bunch of missing values
+DFsample<-DFsample[,-c(1:7,51:52)]
+##Have to convert salary and Salarycap columns to numeric
+##While doing it already, change this in the parent df too
+DFsample$Salary<-as.numeric(gsub('[$,]','',DFsample$Salary))
+DF$Salary<-as.numeric(gsub('[$,]','',DF$Salary))
+DFsample$SalaryCap<-as.numeric(gsub('[$,]','',DFsample$SalaryCap))
+DF$SalaryCap<-as.numeric(gsub('[$,]','',DF$SalaryCap))
+
+##Make a correlation matrix for the variables in question
+##Removing the variables correlated with themselves and other uncorrelated 
+##variables to tighten up the image
+cormat<-round(cor(DFsample[,c(25,26,30:35,46)],DFsample[,-c(1:3,5,7,8,9,12,14,20,22,25,26,30:35,40:46)],method='spearman', use = "pairwise.complete.obs"),2)
+ggcorrplot(t(cormat),lab = TRUE)
+ggplot(melt(t(cormat),na.rm=T), aes(Var1, Var2, fill=value))+
+  geom_tile(height=1, width=1,colour='black') +
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  ggtitle('Incomplete Variables')+
+  theme_minimal() +
+  geom_text(aes(Var1, Var2, label = value), color = "black", size = 3.5) +
+  coord_equal() +
+  labs(x="",y="",fill="Corr") +
+  theme(axis.text.x=element_text(size=10, angle=45, vjust=1, hjust=1, 
+                                 margin=margin(-3,0,0,0)),
+        axis.text.y=element_text(size=10, margin=margin(0,-3,0,0)),
+        panel.grid.major=element_blank()) 
+
+
+##So points_in_paint_made. fouls_drawn, offensive_fouls, fast_break_made, 
+##and second_chance_made are the only variables remotely correlated with salary.
+##The rest can be safely dropped with no more analysis.
+DFsample<-subset(DFsample, select=-c(points_in_paint_pct,fast_break_pct,
+                                     second_chance_pct,plus_minus))
+DF<-subset(DF, select=-c(points_in_paint_pct,fast_break_pct,
+                               second_chance_pct,plus_minus))
+
+
+
+##points_in_paint_made, fouls_drawn, second_chance_made are all highly correlated 
+##with other variables which indicates that these values can be removed without
+##much of an effect, especially considering their low correlation with salary and 
+##salary as a % <0.56.
+
+lapply(DFsample,function(x) cor(x,DFsample$offensive_fouls,method='spearman',use="pairwise.complete.obs"))
+lapply(DFsample,function(x) cor(x,DFsample$fast_break_made,method='spearman',use="pairwise.complete.obs"))
+
+##Offensive_fouls (.42 correlation with salary) and fast_break_made (.41 correlation
+##with salary) both can be dropped for multiple reasons. One, they are  
+##correlated with a few other variables each. In the case of offensive fouls, 
+##these calls are largely random and more of a product of a defenders efforts
+##to get position, rather than something the offensive player did. With 
+##fast_break_made, a similar logic can be applied in that the elements leading to
+##a made fast break bucket are captured in points, turnovers, and points_off_turnovers
+
+
+##Dropping columns
+DF<-subset(DF, select=-c(points_in_paint_made,fouls_drawn,
+                         offensive_fouls,fast_break_made,
+                         second_chance_made))
+##Renaming the 2k column to start witha letter not a number
+DF$Ratings_2k<-DF$X2K_ratings
+DF<-subset(DF,select=-c(X2K_ratings))
+
+(missing_columns<-(sapply(DF, function(x) which(sum(is.na(x))>0))))
+##The only columns left with missing values are Salary, All_Nba, 
+##All_Nba_team, and Ratings_2k
+
+
+##Let's look at salary: This column is extremely important as it is the basis of the
+##analysis. As a result, missing values cannot just be removed 
+
+sum(is.na(DF$Salary))
+sum(is.na(DF$Salary))/nrow(DF)
+
+##533 missing values which account for 12.7% of the data not terribly much but 
+##still significant
+DF[is.na(DF$Salary),]
+DF[is.na(DF$Salary),"full_name"]
+##OK so upon looking at the missing salaries, quite a few involve people who have
+##names with some form of punctuation, a suffix, or some other odd formatting.
+##To fix this, Salaries must be remapped to the data
+##This may also apply to the 2k ratings, let's check it out
+
+DF[is.na(DF$Ratings_2k),'full_name']
+##Same thing. Have to assume that this happened with all merging done previously,
+##that was not formatted in line with the Sportradar API, meaning that 
+##salaries, 2k_ratings, and All_NBA data is affected
+
+
+##Remapping values to both the Salary, All_NBA, and 2k columns
+##To keep track of the changes
+##BEFORE
+(missing_salary<-sum(is.na(DF$Salary)))
+(missing_2k<-sum(is.na(DF$Ratings_2k)))
+(missing_All_NBA<-sum(is.na(DF$All_Nba)))
+##Fix this in Python
+write.csv(DF,'Fix.csv')
+
+##Read in new dataframe
+DF1<-read.csv('Fixed.csv',na.strings = c(''," "))
+DF1<-subset(DF1,select=-c(Unnamed..0))
+##Reformat the altered columns
+str(DF1)
+##Fix salary, 2kRatings
+DF1$Salary<-as.numeric(gsub('[$,]','',DF1$Salary))
+DF1$Ratings_2k<-as.numeric(DF1$Ratings_2k)
+
+##AFTER
+#Let's see how much the reformatting helped
+(missing_salary2<-sum(is.na(DF1$Salary)))
+(missing_2k2<-sum(is.na(DF1$Ratings_2k)))
+(missing_All_NBA2<-sum(is.na(DF1$All_Nba)))
+##Alright not as much as hoped, but it was still helpful
+##This fixed 122 salary values, 117 2k rankings, and 7 All NBA
+##data points
+sum(is.na(DF1$Salary))/nrow(DF1)
+##Now down to 10% missing salary
+
+##Lets take a closer look at the rows missing salary and the distribution
+DF1[is.na(DF1$Salary),]
+hist(DF1$Salary)
+mean(DF1$Salary,na.rm=TRUE)
+median(DF1$Salary,na.rm=TRUE)
+##Salary is heavily positively skewed with the median essentially half of the
+##mean
+sum(is.na(DF1$Salary))/nrow(DF1)
+
+(cormat1<-round(cor(DF1$Salary,DF1[,-c(1:7,42,43)],method='spearman', use = "pairwise.complete.obs"),2))
+##Salary is not highly correlated with any single variable, making filling in these
+##missing values relatively hard. Given the importance of the column, and the fact that
+##it accounts for a small amount of the data, the missing rows will be dropped
+(salary_indexes<-which(is.na(DF1$Salary),arr.ind=TRUE))
+DF1<-DF1[-c(salary_indexes),]
+sum(is.na(DF1$Salary))
+##Great now salary has no more missing values
+##The data now has 3773 rows after dropping the 411 missing vals
+
+##Now onto 2k_ratings
+sum(is.na(DF1$Ratings_2k))
+sum(is.na(DF1$Ratings_2k))/length(DF1$Ratings_2k)
+##There are now 740 missing values, meaning that 253 of the 411 rows 
+##with missing salaries also had missing 2k_rankings
+
+hist(DF1$Ratings_2k, col='red', main='2k Ratings',xlab="2k Ratings")
+summary(DF1$Ratings_2k)
+sd(DF1$Ratings_2k,na.rm=T)
+##Ok so unlike salary, 2k ratings are relatively normally distributed
+##The mean is 76 and the mean is 75 which is pretty solid
+##Let's look at correlations to see if there is any more information
+##to be gleaned
+(cormat2<-round(cor(DF1$Ratings_2k,DF1[,-c(1:7,42,43)],method='spearman', use = "pairwise.complete.obs"),2))
+##Field goals made,and efficiency are both highly correlated
+##Check to see if there are any relationships
+hist(DF1$field_goals_made)
+summary(DF1$field_goals_made)
+hist(DF1$efficiency)
+summary(DF1$efficiency)
+##There are but they are not reliable as 2k_Ratings median is 25x that of 
+##field_goals_made and around 8.5 times efficiency
+##using these would create 2k ratings way out of range
+##As a result using the median is the way to go
+DF1$Ratings_2k<-ifelse(is.na(DF1$Ratings_2k),median(DF1$Ratings_2k,na.rm=T),DF1$Ratings_2k)
+##Lets look
+sum(is.na(DF1$Ratings_2k))
+summary(DF1$Ratings_2k)
+sd(DF1$Ratings_2k)
+##Everything changed only negligibly, looks good so far
+hist(DF1$Ratings_2k,col='red', main='New 2k Ratings',xlab="2k Ratings")
+##Definitely an odd looking histogram, but not a huge problem as of right now
+
+##Now the only columns with missing values are All_Nba and All_Nba_team
+str(DF1)
+##These columns are meant to be factor variables
+##Assigning 0 for non-All NBA and 1 for All_Nba
+DF1$All_Nba<-ifelse(is.na(DF1$All_Nba),0,DF1$All_Nba)
+for (i in 1:length(DF1$All_Nba)){
+  if (DF1[i,'All_Nba']=='True'){
+    DF1[i,'All_Nba']<-1
+  }
+}
+DF1$All_Nba<-as.factor(DF1$All_Nba)
+##Assigning 0 for those not on an All_Nba_team
+DF1$All_Nba_team<-ifelse(is.na(DF1$All_Nba_team),0,DF1$All_Nba_team)
+DF1$All_Nba_team<-as.factor(DF1$All_Nba_team)
+
+sum(is.na(DF1))
+##Great, now all missing values are dealt with
+lapply(DF1,summary)
+##Everything looks good no values seem to be out of place or super unreasonable
+##Changing position to a factor variable
+DF1$primary_position<-as.factor(DF1$primary_position)
+##Now it is time to reduce dimensionality
+##Dropping all names and team names except for team name and player full name
+DF1<-subset(DF1,select=-c(market,first_name,last_name))
+
+cormat4<-round(cor(DF1[,-c(1:4,39,40)],DF1[,-c(1:4,39,40)],method='spearman', use = "pairwise.complete.obs"),2)
+
+ggplot(melt(cormat4), aes(Var1, Var2, fill=value)) +
+  geom_tile(height=1, width=1) +
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+  ggtitle('Big correlation matrix')+
+  coord_equal() +
+  labs(x="",y="",fill="Corr") +
+  theme(axis.text.x=element_text(size=10, angle=45, vjust=1, hjust=1, 
+                                 margin=margin(-3,0,0,0)),
+        axis.text.y=element_text(size=10, margin=margin(0,-3,0,0)),
+        panel.grid.major=element_blank()) 
+
+cor(DF1$points,DF1$field_goals_made)
+##There are a lot of variables highly correlated with 
+##others
+##Field_goals_made and points are very highly correlated
+##Having both is unnecessary so field_goals_made will be removed
+##Offensive and defensive rebounds are highly correlated with rebounds
+##Having 3 stats for the same phenomena is unnecessary
+##Can drop offensive and defensive rebounds
+DF1<-subset(DF1,select=-c(field_goals_made,off_rebounds,def_rebounds))
+
+##Want to check if the shooting stats can be compiled into 
+##aggregate stats measures like true_shooting and efficiency
+
+cormat5<-round(cor(DF1[,-c(1:7,13,16:21,23,29:40)],DF1[,-c(1:7,13,16:21,23,29:40)],method='spearman', use = "pairwise.complete.obs"),2)
+
+get_lower_tri<-function(cormat){
+  cormat[upper.tri(cormat)] <- NA
+  return(cormat)
+}
+
+
+ggplot(melt(get_lower_tri(cormat5),na.rm=T), aes(Var1, Var2, fill=value))+
+  geom_tile(height=1, width=1,colour='black') +
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  geom_text(aes(Var1, Var2, label = value), color = "black", size = 4) +
+  theme_minimal() +
+  coord_equal() +
+  ggtitle('Offensive Metrics')+
+  labs(x="",y="",fill="Corr") +
+  theme(axis.text.x=element_text(size=10, angle=45, vjust=1, hjust=1, 
+                                 margin=margin(-3,0,0,0)),
+        axis.text.y=element_text(size=10, margin=margin(0,-3,0,0)),
+        panel.grid.major=element_blank()) 
+
+##Two_points_made, free_throws_made, points, true_shooting_att, 
+##are all correlated highly with eachother as well as with efficiency
+##Given that true_shooting is a stat that aggregates field goals, 3 pt field
+##goals and free throws (Formula is FGA+.44*FTA) it is safe to drop 
+##Two_points_made, free_throws_made, and points. Surprisingly, true_shooting
+##is not that highly correlated with 3pt metrics
+DF1<-subset(DF1,select=-c(two_points_made,free_throws_made,points))
+##Field_goals_pct is also redundant as it is captured in efg%. ts%,
+##and 2pts%
+DF1<-subset(DF1,select=-c(field_goals_pct))
+
+##Currently, there are 3 different variables for fouls, personal, tech,
+##and flagrant, want to combine all into one total fouls variable
+##Tech_fouls are currently in aggregate form so must convert to pergame
+DF1$tech_fouls<-DF1$tech_fouls/DF1$games_played
+##This created 65 missing vals, likely for those who had 0 games_played
+missing_tech<-which(is.na(DF1$tech_fouls),arr.ind = T)
+DF1[missing_tech,]
+##This revealed 65 rows of people with 0 stats
+##Going to drop these rows
+DF1<-DF1[-c(missing_tech),]
+ncol(DF1)
+nrow(DF1)
+
+##Combine into one column
+##Just to make sure nothing gets too messed up, want to look at personal_fouls,
+##the main input of the toal_fouls column
+hist(DF1$personal_fouls, col='green',main='Personal Fouls',xlab = 'Personal Fouls')
+summary(DF1$personal_fouls)
+sd(DF1$personal_fouls)
+DF1$total_fouls<-DF1$personal_fouls+DF1$tech_fouls+DF1$flagrant_fouls
+hist(DF1$total_fouls,col='green',main='Total Fouls',xlab = 'Total Fouls')
+summary(DF1$total_fouls)
+sd(DF1$total_fouls)
+##Looks good
+##Drop the individual foul rows
+DF1<-subset(DF1,select=-c(personal_fouls,tech_fouls,flagrant_fouls))
+##Another correlation matrix for the remaining variables
+
+cormat6<-round(cor(DF1[,-c(1:4,29,30)],DF1[,-c(1:4,29,30)],method='spearman', use = "pairwise.complete.obs"),2)
+
+
+ggplot(melt(get_lower_tri(cormat6),na.rm=T), aes(Var1, Var2, fill=value))+
+  geom_tile(height=1, width=1) +
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+  geom_text(aes(Var1, Var2, label = value), color = "black", size = 2) +
+  coord_equal() +
+  labs(x="",y="",fill="Corr") +
+  theme(axis.text.x=element_text(size=10, angle=45, vjust=1, hjust=1, 
+                                 margin=margin(-3,0,0,0)),
+        axis.text.y=element_text(size=10, margin=margin(0,-3,0,0)),
+        panel.grid.major=element_blank()) 
+##Minutes is highly correlated with a lot of other variables,
+##including true shooting_att, and efficiency
+##Blocked_attempts can also be removed due to its correlation with other variables
+##and also the nature of the stat. It tacks how many shots the player
+##takes that get blocked, which essentially is just a missed shot
+##given how many other stats track offensive output, this one is 
+##significantly less important.
+
+##Dropping columns
+DF1<-subset(DF1,select=-c(minutes,blocked_att))
+
+##Want to combine salary and salary cap into one salary cap % variable
+##Not only to reduce dimensionality, but also to account for the growth of 
+##Salary and the Salary Cap over time
+hist(DF1$Salary)
+ggplot(DF1,aes(year,SalaryCap/(length(SalaryCap)/8)))+
+  geom_bar(stat = 'identity', fill='orange')+
+  ggtitle('Salary Cap Over Time')+
+  labs(x='Year',y='Salary Cap')
+ggplot(DF1,aes(year,Salary/(length(Salary)/8)))+
+  geom_bar(stat='identity',fill='orange')+
+  ggtitle('Mean Salary Over Time')+
+  labs(x="Year",y="Salary",fill="Corr")
+DF1$Salary_pct<-DF1$Salary/DF1$SalaryCap
+hist(DF1$Salary_pct)
+
+##Perfect, drop both Salary and SalaryCap
+DF1<-subset(DF1,select=-c(Salary,SalaryCap))
+
+##One more correlation matrix
+cormat7<-round(cor(DF1[,-c(1:4,25,26)],DF1[,-c(1:4,25,26)],method='spearman', use = "pairwise.complete.obs"),2)
+
+
+ggplot(melt(get_lower_tri(cormat7),na.rm=T), aes(Var1, Var2, fill=value))+
+  geom_tile(height=1, width=1) +
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+  geom_text(aes(Var1, Var2, label = value), color = "black", size = 4) +
+  coord_equal() +
+  labs(x="",y="",fill="Corr") +
+  theme(axis.text.x=element_text(size=10, angle=45, vjust=1, hjust=1, 
+                                 margin=margin(-3,0,0,0)),
+        axis.text.y=element_text(size=10, margin=margin(0,-3,0,0)),
+        panel.grid.major=element_blank()) 
+##Given the low correlation with percent stats and salary
+##and given the formulas used for calculating TS% and Efg%, it is 
+##redundant to have these stats on top of three_points_pct,two_points_pct,
+##free_throws_pct
+##Additionally, double_doubles and triple_doubles can be removed
+##as they represent single outstanding games rather than a pattern of the player's
+##ability to perform consistently
+
+##Dropping these columns
+DF1<-subset(DF1,select=-c(three_points_pct,two_points_pct,free_throws_pct,
+                          double_doubles,triple_doubles))
+##Checking all the columns to make sure nothing is out of place
+lapply(DF1,function(x) summary(x))
+##Found a games_played entry of 83 which is impossible
+which(DF1$games_played==83,arr.ind=T)
+DF1[c(2808,3317),]
+##Turns out that this actually possible, the 2 players got traded
+##midseason and because of differences in schedule, they actually did play 
+##83 games
+
+##This also exposed the fact that the team_changes column is not accurate
+##as one of the players had an entry of 0 when it should have been 1
+##This realization combined with the non-existent correlations with 
+##this variable and anything other than experience means it should be dropped
+
+DF1<-subset(DF1,select=-c(team_changes))
+##True_shooting_pct has an issue, the max value should be right around 1
+##1.08 is the highest ever recorded
+##but instead it is 1813
+true<-which(DF1$true_shooting_pct>=1.08,arr.ind=T)
+length(true)
+##There are 127 rows effected by this
+DF1[true,]
+hist(DF1$true_shooting_pct,main='True Shooting Pct',xlab='TS%',col='lightblue')
+hist(DF1[-c(true),'true_shooting_pct'], col='purple', 
+     main='True Shooting Percentage',xlab='TS%')
+summary(DF1[-c(true),'true_shooting_pct'])
+sd(DF1[-c(true),'true_shooting_pct'])
+##So without the outliers true_shooting_pct is pretty balanced,
+##with a mean of .51 and a median of .539
+##Going to replace all true_shooting out of range with the median
+DF1$true_shooting_pct<-ifelse(DF1$true_shooting_pct>=1.08,median(DF1$true_shooting_pct),DF1$true_shooting_pct)
+hist(DF1$true_shooting_pct,col='purple', 
+     main='New True Shooting Percentage',xlab='TS%')
+summary(DF1$true_shooting_pct)
+##Looks good
+
+##Effective_fg_pct also has an outlier
+hist(DF1$effective_fg_pct)
+summary(DF1$effective_fg_pct)
+eff<-which(DF1$effective_fg_pct>=1,arr.ind=T)
+##Ok so theres only one value out of place (1.5 eff FG%) so
+##drop that row
+DF1<-DF1[-c(1793),]
+sum(is.na(DF1))
+lapply(DF1,function(x) summary(x))
+
+##Everything looks good!!
+##For some final formatting
+##Mulitply all % columns by 100
+DF1[,c(7,13,16,25)]<-DF1[,c(7,13,16,25)]*100
+ggplot(DF1,aes(year,Salary_pct/(length(Salary_pct)/8)))+geom_bar(stat='identity',fill='orange')+
+  ggtitle('Mean Salary % Over Time')+
+  labs(x='Year',y='Salary%')
+##Round all data to 2 places except for non-numeric columns and salary
+##as a %
+DF1[,-c(1:4,19,20,21,25)]<-round(DF1[,-c(1:4,19,20,21,25)],2)
+
+
+##Write to a csv file
+write.csv(DF1,'Clean_Data.csv',row.names = FALSE)
+
+##Applying min max normalization to the data
+min_max_norm <- function(x) {
+  (x - min(x)) / (max(x) - min(x))
+}
+NormalizedDF<-as.data.frame(lapply(DF1[,-c(1:4,20,21)],function(x) min_max_norm(x)))
+NormalizedDF$year<-DF1$year
+NormalizedDF$name<-DF1$name 
+NormalizedDF$full_name<-DF1$full_name
+NormalizedDF$primary_position<-DF1$primary_position
+NormalizedDF$All_Nba<-DF1$All_Nba
+NormalizedDF$All_Nba_team<-DF1$All_Nba_team
+##Round all datat to 2 decimals except for non-numeric columns
+##and Salary%
+NormalizedDF[,-c(19:25)]<-round(NormalizedDF[,-c(19:25)],2)
+
+write.csv(NormalizedDF,'NormalizedDF.csv',row.names = FALSE)
+
+

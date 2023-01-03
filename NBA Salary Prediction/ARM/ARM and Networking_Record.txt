@@ -1,0 +1,41 @@
+##Importing necessary libraries
+library(arules)
+library(arulesViz)
+library(dplyr)
+library(ggplot2)
+
+##Read in the data
+DF<-read.csv('Clean_Data.csv')
+str(DF)
+
+##Remove unnecessary columns
+DF<-subset(DF,select=-c(year,name,full_name,All_Nba,All_Nba_team))
+##Removing players with less than 15 games played
+DF1<-subset(DF,games_played>=15)
+
+##Have to Bin All the data, will do this by quartiles
+##Bottom = 1st quartile 
+##Low=2nd quartile
+##high= 3rd quartile
+##Top= 4th quartile
+for (i in names(DF1[,-1])){
+  quartile1<-as.numeric(summary(DF1[,i])[['1st Qu.']])
+  quartile2<-as.numeric(summary(DF1[,i])[['Median']])
+  quartile3<-as.numeric(summary(DF1[,i])[['3rd Qu.']])
+  for (a in 1:length(DF1[,i])){
+    if (DF1[a,i]<=quartile1){
+      DF1[a,i]<-paste('Bottom',i)
+    }
+    else if(DF1[a,i]<=quartile2){
+      DF1[a,i]<-paste('Low',i)
+    }
+    else if(DF1[a,i]<=quartile3){
+      DF1[a,i]<-paste('High',i)
+    }
+    else{
+      DF1[a,i]<-paste('Top',i)
+    }
+  }
+}
+##Writing results to csv file
+write.csv(DF1,'AssociationData.csv',row.names=FALSE)

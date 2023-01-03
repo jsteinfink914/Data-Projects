@@ -1,0 +1,14 @@
+name: gis_project_steinfink_jake
+title: gis_project_steinfink_jake
+username:
+account: jrs9
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7839863
+bundleId: 6606795
+url: https://jrs9.shinyapps.io/gis_project_steinfink_jake/
+when: 1670444745.50556
+lastSyncTime: 1670444745.50557
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rprofile|data/metadata.csv

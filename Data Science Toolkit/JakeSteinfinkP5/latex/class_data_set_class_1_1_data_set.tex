@@ -1,0 +1,68 @@
+\hypertarget{class_data_set_class_1_1_data_set}{}\doxysection{Data\+Set\+Class.\+Data\+Set Class Reference}
+\label{class_data_set_class_1_1_data_set}\index{DataSetClass.DataSet@{DataSetClass.DataSet}}
+Inheritance diagram for Data\+Set\+Class.\+Data\+Set\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.061611cm]{class_data_set_class_1_1_data_set}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_data_set_a86602a37d7f358715a8bb008adfddd84}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, filename, filetype=\char`\"{}csv\char`\"{})
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_data_set_ace77866fc06cb11987a0c2edf0a8e149}{find\+Median}} (self, values)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_data_set_class_1_1_data_set_ae2e89f91936f7cfb820763d5498952cb}\label{class_data_set_class_1_1_data_set_ae2e89f91936f7cfb820763d5498952cb}} 
+{\bfseries data}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_data_set_a86602a37d7f358715a8bb008adfddd84}\label{class_data_set_class_1_1_data_set_a86602a37d7f358715a8bb008adfddd84}} 
+\index{DataSetClass.DataSet@{DataSetClass.DataSet}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!DataSetClass.DataSet@{DataSetClass.DataSet}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Data\+Set.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename,  }\item[{}]{filetype = {\ttfamily \char`\"{}csv\char`\"{}} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Makes use of the __readFromCSV(self,filename) or __load(self,filename)
+methods to instantiate the data object
+
+Parameters
+----------
+filename : file to be used
+
+filetype: default is csv-- file type can be any value. Anything but csv
+            will be loaded using the .read() function
+
+Returns
+-------
+self.data: the data object is stored in the .data attribute\end{DoxyVerb}
+ 
+
+Reimplemented in \mbox{\hyperlink{class_data_set_class_1_1_heterogeneous_data_a92df016159a115cb8f7e4fd2b137f5af}{Data\+Set\+Class.\+Heterogeneous\+Data}}, \mbox{\hyperlink{class_data_set_class_1_1_time_series_data_set_aa514314eca233c6aa4f6098e4ec00eb2}{Data\+Set\+Class.\+Time\+Series\+Data\+Set}}, \mbox{\hyperlink{class_data_set_class_1_1_quant_data_set_af37a0c36d69566e9b8c48fe254e24cb9}{Data\+Set\+Class.\+Quant\+Data\+Set}}, \mbox{\hyperlink{class_data_set_class_1_1_qual_data_set_a8ea630dc4f05b7777a51983af2323428}{Data\+Set\+Class.\+Qual\+Data\+Set}}, and \mbox{\hyperlink{class_data_set_class_1_1_text_data_set_ab46eb534c8cc3d0de8541b998c4d1d1c}{Data\+Set\+Class.\+Text\+Data\+Set}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_data_set_ace77866fc06cb11987a0c2edf0a8e149}\label{class_data_set_class_1_1_data_set_ace77866fc06cb11987a0c2edf0a8e149}} 
+\index{DataSetClass.DataSet@{DataSetClass.DataSet}!findMedian@{findMedian}}
+\index{findMedian@{findMedian}!DataSetClass.DataSet@{DataSetClass.DataSet}}
+\doxysubsubsection{\texorpdfstring{findMedian()}{findMedian()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Data\+Set.\+find\+Median (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{values }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+values : List of values where the median must be found
+
+Returns
+-------
+median : Median number in the list\end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Data\+Set\+Class.\+py\end{DoxyCompactItemize}

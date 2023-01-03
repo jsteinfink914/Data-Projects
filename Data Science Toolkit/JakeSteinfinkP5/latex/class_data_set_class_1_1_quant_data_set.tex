@@ -1,0 +1,78 @@
+\hypertarget{class_data_set_class_1_1_quant_data_set}{}\doxysection{Data\+Set\+Class.\+Quant\+Data\+Set Class Reference}
+\label{class_data_set_class_1_1_quant_data_set}\index{DataSetClass.QuantDataSet@{DataSetClass.QuantDataSet}}
+Inheritance diagram for Data\+Set\+Class.\+Quant\+Data\+Set\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_data_set_class_1_1_quant_data_set}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_quant_data_set_af37a0c36d69566e9b8c48fe254e24cb9}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, filename)
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_quant_data_set_ae4aa32e9841da85c0983b8c5d5113dbd}{clean}} (self, Columns=\char`\"{}\char`\"{})
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_quant_data_set_ac71c84ba661bab2190e97a06e644aa7f}{explore}} (self, Columns)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_quant_data_set_af37a0c36d69566e9b8c48fe254e24cb9}\label{class_data_set_class_1_1_quant_data_set_af37a0c36d69566e9b8c48fe254e24cb9}} 
+\index{DataSetClass.QuantDataSet@{DataSetClass.QuantDataSet}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!DataSetClass.QuantDataSet@{DataSetClass.QuantDataSet}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Quant\+Data\+Set.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+filename : file to be used
+
+Makes use of the __readFromCSV(self,filename)
+method to instantiate the data object
+
+Returns
+-------
+self.data: the data object is stored in the .data attribute.\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{class_data_set_class_1_1_data_set_a86602a37d7f358715a8bb008adfddd84}{Data\+Set\+Class.\+Data\+Set}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_quant_data_set_ae4aa32e9841da85c0983b8c5d5113dbd}\label{class_data_set_class_1_1_quant_data_set_ae4aa32e9841da85c0983b8c5d5113dbd}} 
+\index{DataSetClass.QuantDataSet@{DataSetClass.QuantDataSet}!clean@{clean}}
+\index{clean@{clean}!DataSetClass.QuantDataSet@{DataSetClass.QuantDataSet}}
+\doxysubsubsection{\texorpdfstring{clean()}{clean()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Quant\+Data\+Set.\+clean (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{Columns = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+Columns: a list of columns for the function to be applied to ;
+         default is all the numeric columns in the data
+
+Creates
+-------
+self.data: Returns a version of the dataframe with missing
+values replaced with the mean\end{DoxyVerb}
+ \mbox{\Hypertarget{class_data_set_class_1_1_quant_data_set_ac71c84ba661bab2190e97a06e644aa7f}\label{class_data_set_class_1_1_quant_data_set_ac71c84ba661bab2190e97a06e644aa7f}} 
+\index{DataSetClass.QuantDataSet@{DataSetClass.QuantDataSet}!explore@{explore}}
+\index{explore@{explore}!DataSetClass.QuantDataSet@{DataSetClass.QuantDataSet}}
+\doxysubsubsection{\texorpdfstring{explore()}{explore()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Quant\+Data\+Set.\+explore (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{Columns }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+Columns: 2 columns in [x,y] form to be plotted
+
+Returns + Displays
+--------------------
+Viz1: Scatterplot of x vs. y
+Viz2: Bar chart of x vs. y\end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Data\+Set\+Class.\+py\end{DoxyCompactItemize}

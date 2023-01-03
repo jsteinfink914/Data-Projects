@@ -1,0 +1,87 @@
+\hypertarget{class_data_set_class_1_1_qual_data_set}{}\doxysection{Data\+Set\+Class.\+Qual\+Data\+Set Class Reference}
+\label{class_data_set_class_1_1_qual_data_set}\index{DataSetClass.QualDataSet@{DataSetClass.QualDataSet}}
+Inheritance diagram for Data\+Set\+Class.\+Qual\+Data\+Set\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_data_set_class_1_1_qual_data_set}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_qual_data_set_a8ea630dc4f05b7777a51983af2323428}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, filename)
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_qual_data_set_a6cfb81f5d0cd12f7c6dbbb0a354a44dc}{clean}} (self, Columns=\char`\"{}\char`\"{}, value=\char`\"{}mode\char`\"{})
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_qual_data_set_a57e04cc80d7a31135021c53795436686}{explore}} (self, Columns=\char`\"{}\char`\"{})
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_qual_data_set_a8ea630dc4f05b7777a51983af2323428}\label{class_data_set_class_1_1_qual_data_set_a8ea630dc4f05b7777a51983af2323428}} 
+\index{DataSetClass.QualDataSet@{DataSetClass.QualDataSet}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!DataSetClass.QualDataSet@{DataSetClass.QualDataSet}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Qual\+Data\+Set.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+filename : file to be used
+
+Makes use of the __readFromCSV(self,filename)
+method to instantiate the data object
+
+Returns
+-------
+self.data: The data object is stored in the .data attribute.\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{class_data_set_class_1_1_data_set_a86602a37d7f358715a8bb008adfddd84}{Data\+Set\+Class.\+Data\+Set}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_qual_data_set_a6cfb81f5d0cd12f7c6dbbb0a354a44dc}\label{class_data_set_class_1_1_qual_data_set_a6cfb81f5d0cd12f7c6dbbb0a354a44dc}} 
+\index{DataSetClass.QualDataSet@{DataSetClass.QualDataSet}!clean@{clean}}
+\index{clean@{clean}!DataSetClass.QualDataSet@{DataSetClass.QualDataSet}}
+\doxysubsubsection{\texorpdfstring{clean()}{clean()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Qual\+Data\+Set.\+clean (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{Columns = {\ttfamily \char`\"{}\char`\"{}},  }\item[{}]{value = {\ttfamily \char`\"{}mode\char`\"{}} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Paramters
+ -----------
+ Columns: a list of columns for the function to be applied to;
+          default is all columns
+
+ value: can equal "median" or "mode"; default is 'mode'
+
+ Creates
+ -------
+self.data: a version of the dataframe with missing
+values replaced with the median or mode
+\end{DoxyVerb}
+ \mbox{\Hypertarget{class_data_set_class_1_1_qual_data_set_a57e04cc80d7a31135021c53795436686}\label{class_data_set_class_1_1_qual_data_set_a57e04cc80d7a31135021c53795436686}} 
+\index{DataSetClass.QualDataSet@{DataSetClass.QualDataSet}!explore@{explore}}
+\index{explore@{explore}!DataSetClass.QualDataSet@{DataSetClass.QualDataSet}}
+\doxysubsubsection{\texorpdfstring{explore()}{explore()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Qual\+Data\+Set.\+explore (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{Columns = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+------------
+Columns: Columns to be vizualized; default set to all. If default is used,
+            only second plot is displayed due to memory overloading
+            for high dimensional data
+
+Displays
+-------
+Viz1: Histogram for each column of interest
+Viz2: Graph of unique value counts for each column
+
+Returns
+---------
+fig2: A barplot of the count of unique values for each column\end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Data\+Set\+Class.\+py\end{DoxyCompactItemize}

@@ -1,0 +1,237 @@
+\hypertarget{class_experiment_class_1_1_experiment}{}\doxysection{Experiment\+Class.\+Experiment Class Reference}
+\label{class_experiment_class_1_1_experiment}\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{class_experiment_class_1_1_experiment_ab20a9b9416d6595bf51a0e19004072f7}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, Dataset, \mbox{\hyperlink{class_experiment_class_1_1_experiment_ab0122e0fdbc37dab349b40915451645a}{Classifier\+List}}, label\+Column)
+\item 
+def \mbox{\hyperlink{class_experiment_class_1_1_experiment_a17eaa47f2b05d95694c829ef51e8b652}{run\+Cross\+Val}} (self, k)
+\item 
+def \mbox{\hyperlink{class_experiment_class_1_1_experiment_a7cb9d5f8c3021dac256faa4983425367}{score}} (self)
+\item 
+def \mbox{\hyperlink{class_experiment_class_1_1_experiment_ad86e85eb8a9a82b175e36aa049538450}{confusion\+Matrix}} (self)
+\item 
+def \mbox{\hyperlink{class_experiment_class_1_1_experiment_add6303cf359d585eba5af62c83a2c6cc}{ROC}} (self, positive\+\_\+class\+\_\+if\+\_\+binary=None)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_experiment_class_1_1_experiment_ab0efe4bd03fa15e1040836dbbe89f53b}\label{class_experiment_class_1_1_experiment_ab0efe4bd03fa15e1040836dbbe89f53b}} 
+{\bfseries data}
+\item 
+\mbox{\Hypertarget{class_experiment_class_1_1_experiment_a5dabc4421acec5207f845df665d64580}\label{class_experiment_class_1_1_experiment_a5dabc4421acec5207f845df665d64580}} 
+{\bfseries Classifer\+List}
+\item 
+\mbox{\Hypertarget{class_experiment_class_1_1_experiment_af4fe1d19a92be31c1c9b8d984720c5bd}\label{class_experiment_class_1_1_experiment_af4fe1d19a92be31c1c9b8d984720c5bd}} 
+{\bfseries label\+Column}
+\item 
+\mbox{\hyperlink{class_experiment_class_1_1_experiment_ab0122e0fdbc37dab349b40915451645a}{Classifier\+List}}
+\begin{DoxyCompactList}\small\item\em This list will be updated as more algorithms come online. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_experiment_class_1_1_experiment_a92732bd70adf757962a057303f262e00}{Predicted\+\_\+\+Labels}}
+\begin{DoxyCompactList}\small\item\em Predicted labels will be stored in a matrix of size Num\+Classifiers$\ast$numfolds. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_experiment_class_1_1_experiment_a364fb0d55546145853cdf9315bf15cb5}\label{class_experiment_class_1_1_experiment_a364fb0d55546145853cdf9315bf15cb5}} 
+{\bfseries True\+\_\+\+Labels}
+\item 
+\mbox{\hyperlink{class_experiment_class_1_1_experiment_a26aff7ab49caf209b70587ccc132ab18}{Points}}
+\begin{DoxyCompactList}\small\item\em For each classifier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_experiment_class_1_1_experiment_ab20a9b9416d6595bf51a0e19004072f7}\label{class_experiment_class_1_1_experiment_ab20a9b9416d6595bf51a0e19004072f7}} 
+\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Experiment\+Class.\+Experiment.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{Dataset,  }\item[{}]{Classifier\+List,  }\item[{}]{label\+Column }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Parameters
+ --------------
+ Dataset: a dataset object with labels
+ ClassifierList: a list of classifiers that should be run
+ labelColumn: Column name that holds the labels
+
+Returns as attribute
+-------
+self.data: Dataset object
+self.ClassifierListL: list of classifiers to be applied
+self.labelColumn=label column name\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_experiment_class_1_1_experiment_ad86e85eb8a9a82b175e36aa049538450}\label{class_experiment_class_1_1_experiment_ad86e85eb8a9a82b175e36aa049538450}} 
+\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}!confusionMatrix@{confusionMatrix}}
+\index{confusionMatrix@{confusionMatrix}!ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsubsection{\texorpdfstring{confusionMatrix()}{confusionMatrix()}}
+{\footnotesize\ttfamily def Experiment\+Class.\+Experiment.\+confusion\+Matrix (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Creates a confusion matrix for each classifier
+
+Prints to console
+-------
+Creates confusion matrix comparing the test predicitions to the actual results.\end{DoxyVerb}
+ \mbox{\Hypertarget{class_experiment_class_1_1_experiment_add6303cf359d585eba5af62c83a2c6cc}\label{class_experiment_class_1_1_experiment_add6303cf359d585eba5af62c83a2c6cc}} 
+\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}!ROC@{ROC}}
+\index{ROC@{ROC}!ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsubsection{\texorpdfstring{ROC()}{ROC()}}
+{\footnotesize\ttfamily def Experiment\+Class.\+Experiment.\+ROC (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{positive\+\_\+class\+\_\+if\+\_\+binary = {\ttfamily None} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+positive_class_if_binary : TYPE, optional
+    DESCRIPTION. If dataset houses only 2 classes, enter the name of the 
+    positive label in this format: [1] or ["string"]
+
+Returns
+-------
+ROC curve for all classifiers for all labels displayed in the console.\end{DoxyVerb}
+ \mbox{\Hypertarget{class_experiment_class_1_1_experiment_a17eaa47f2b05d95694c829ef51e8b652}\label{class_experiment_class_1_1_experiment_a17eaa47f2b05d95694c829ef51e8b652}} 
+\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}!runCrossVal@{runCrossVal}}
+\index{runCrossVal@{runCrossVal}!ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsubsection{\texorpdfstring{runCrossVal()}{runCrossVal()}}
+{\footnotesize\ttfamily def Experiment\+Class.\+Experiment.\+run\+Cross\+Val (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{k }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Makes use of ClassifierAlgorithmClass functions to run algorithms on
+k folds
+
+
+Parameters
+----------
+k : how many cross validation sessions will be run
+
+Returns as attribute
+-------
+self.Predicted_Labels: Predicted Labels as a matrix of size NumClassifiers*numFolds
+self.True_Labels: Actual labels as a matrix of size NumClassifiers*numFolds\end{DoxyVerb}
+ \mbox{\Hypertarget{class_experiment_class_1_1_experiment_a7cb9d5f8c3021dac256faa4983425367}\label{class_experiment_class_1_1_experiment_a7cb9d5f8c3021dac256faa4983425367}} 
+\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}!score@{score}}
+\index{score@{score}!ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsubsection{\texorpdfstring{score()}{score()}}
+{\footnotesize\ttfamily def Experiment\+Class.\+Experiment.\+score (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Computes the accuracy of the cross-validated algorithms for all
+algorithms being testes
+
+Prints to console
+-------
+Accuracy score based for each algorithm that is run.\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_experiment_class_1_1_experiment_ab0122e0fdbc37dab349b40915451645a}\label{class_experiment_class_1_1_experiment_ab0122e0fdbc37dab349b40915451645a}} 
+\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}!ClassifierList@{ClassifierList}}
+\index{ClassifierList@{ClassifierList}!ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsubsection{\texorpdfstring{ClassifierList}{ClassifierList}}
+{\footnotesize\ttfamily Experiment\+Class.\+Experiment.\+Classifier\+List}
+
+
+
+This list will be updated as more algorithms come online. 
+
+Filtering Classifier\+List to only include ones with functionality \mbox{\Hypertarget{class_experiment_class_1_1_experiment_a26aff7ab49caf209b70587ccc132ab18}\label{class_experiment_class_1_1_experiment_a26aff7ab49caf209b70587ccc132ab18}} 
+\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}!Points@{Points}}
+\index{Points@{Points}!ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsubsection{\texorpdfstring{Points}{Points}}
+{\footnotesize\ttfamily Experiment\+Class.\+Experiment.\+Points}
+
+
+
+For each classifier. 
+
+Empty lists to store all predicted and true labels
+
+For each fold collect the labels and append to above lists
+
+Flatten list of lists
+
+Get label and confidence that it belongs to positive class
+
+Grab the confidence values
+
+Sort in reverse order
+
+Sort predictions based on confidence
+
+Sort true labels the same way the prediction labels were sorted
+
+Counting how many positive and neagtive instances there are
+
+Empty list to store tuples of (FPR,TPR)
+
+For each label
+
+If likelihood doesn\textquotesingle{}t equal last likelihood
+
+Calculate FPR,TPR
+
+If a true positive, increment
+
+If a false positive, increment
+
+Add points to dictionary with the classifier as the key
+
+Plot points
+
+Dictionary to store roc points for each class
+
+Get tuple of predicted label and likelihood that row belongs to the class in question
+
+Sort predictions and true labels the same way -- based on confidences
+
+Calculate FPR,TPR
+
+Increment if positive
+
+Increment if negative
+
+Plot points for each class
+
+Plot evaluation line \mbox{\Hypertarget{class_experiment_class_1_1_experiment_a92732bd70adf757962a057303f262e00}\label{class_experiment_class_1_1_experiment_a92732bd70adf757962a057303f262e00}} 
+\index{ExperimentClass.Experiment@{ExperimentClass.Experiment}!Predicted\_Labels@{Predicted\_Labels}}
+\index{Predicted\_Labels@{Predicted\_Labels}!ExperimentClass.Experiment@{ExperimentClass.Experiment}}
+\doxysubsubsection{\texorpdfstring{Predicted\_Labels}{Predicted\_Labels}}
+{\footnotesize\ttfamily Experiment\+Class.\+Experiment.\+Predicted\+\_\+\+Labels}
+
+
+
+Predicted labels will be stored in a matrix of size Num\+Classifiers$\ast$numfolds. 
+
+Actual labels will be stored in a matrix of size Numclassifiers$\ast$numfolds
+
+For each fold
+
+Calculate fold size
+
+Test indices are a changing list of indices of size fold\+\_\+size
+
+Train indices are all other indices
+
+Select train and test data and isolate label columns
+
+For each classifier
+
+Will become a series of elifs for each different classifier
+
+Initiate simple\+KNNClassifer class
+
+Feed train data and labels
+
+Receive predicted labels
+
+Store them in the matrix for the specific classifier and specific fold
+
+Store actual labels in same spot
+
+Initiate Decision\+Tree\+Classifier
+
+Feed train data and labels
+
+Get predicted labels
+
+Store predicted and actual labels
+
+If not a valid algorithm...
+
+Make predicted and actual labels attributes 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Experiment\+Class.\+py\end{DoxyCompactItemize}

@@ -1,0 +1,101 @@
+\hypertarget{class_data_set_class_1_1_text_data_set}{}\doxysection{Data\+Set\+Class.\+Text\+Data\+Set Class Reference}
+\label{class_data_set_class_1_1_text_data_set}\index{DataSetClass.TextDataSet@{DataSetClass.TextDataSet}}
+Inheritance diagram for Data\+Set\+Class.\+Text\+Data\+Set\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_data_set_class_1_1_text_data_set}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_text_data_set_ab46eb534c8cc3d0de8541b998c4d1d1c}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, filename, filetype)
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_text_data_set_a79bc1bebe324a9449c67d2258938e0bc}{clean}} (self, Stopwords=\char`\"{}\char`\"{}, language=\char`\"{}english\char`\"{})
+\item 
+def \mbox{\hyperlink{class_data_set_class_1_1_text_data_set_ae9030993452d97fd7280af5ff1e55ddf}{explore}} (self, Columns=\textquotesingle{}\textquotesingle{})
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_data_set_class_1_1_text_data_set_a109d7043d773211fc07d36b7a0135638}{words}}
+\begin{DoxyCompactList}\small\item\em Setting stop words. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_text_data_set_ab46eb534c8cc3d0de8541b998c4d1d1c}\label{class_data_set_class_1_1_text_data_set_ab46eb534c8cc3d0de8541b998c4d1d1c}} 
+\index{DataSetClass.TextDataSet@{DataSetClass.TextDataSet}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!DataSetClass.TextDataSet@{DataSetClass.TextDataSet}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Text\+Data\+Set.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename,  }\item[{}]{filetype }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+filename : file to be used
+
+Makes use of the __readFromCSV(self,filename) or __load(self,filename)
+methods to instantiate the data object
+
+filetype: Paramater meant specifically for text analysis, filetype should
+            be anything other than 'csv'
+
+Returns
+-------
+self.data: A list of lists of words stored in the .data attribute\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{class_data_set_class_1_1_data_set_a86602a37d7f358715a8bb008adfddd84}{Data\+Set\+Class.\+Data\+Set}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_text_data_set_a79bc1bebe324a9449c67d2258938e0bc}\label{class_data_set_class_1_1_text_data_set_a79bc1bebe324a9449c67d2258938e0bc}} 
+\index{DataSetClass.TextDataSet@{DataSetClass.TextDataSet}!clean@{clean}}
+\index{clean@{clean}!DataSetClass.TextDataSet@{DataSetClass.TextDataSet}}
+\doxysubsubsection{\texorpdfstring{clean()}{clean()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Text\+Data\+Set.\+clean (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{Stopwords = {\ttfamily \char`\"{}\char`\"{}},  }\item[{}]{language = {\ttfamily \char`\"{}english\char`\"{}} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+Stopwords: a list of stop words to be removed from the text file.
+            Will be added on top stop words from nltk stopwords
+language: language the document is in; default is english
+
+Creates
+-------
+self.words: the words in the document without stopwords as a list.
+            This is not returned to the user but rather creates this attribute\end{DoxyVerb}
+ \mbox{\Hypertarget{class_data_set_class_1_1_text_data_set_ae9030993452d97fd7280af5ff1e55ddf}\label{class_data_set_class_1_1_text_data_set_ae9030993452d97fd7280af5ff1e55ddf}} 
+\index{DataSetClass.TextDataSet@{DataSetClass.TextDataSet}!explore@{explore}}
+\index{explore@{explore}!DataSetClass.TextDataSet@{DataSetClass.TextDataSet}}
+\doxysubsubsection{\texorpdfstring{explore()}{explore()}}
+{\footnotesize\ttfamily def Data\+Set\+Class.\+Text\+Data\+Set.\+explore (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{Columns = {\ttfamily \textquotesingle{}\textquotesingle{}} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Returns + Displays
+--------------------
+Viz1: Wordcloud of the data
+Viz2: Top 20 words by frequency count\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_data_set_class_1_1_text_data_set_a109d7043d773211fc07d36b7a0135638}\label{class_data_set_class_1_1_text_data_set_a109d7043d773211fc07d36b7a0135638}} 
+\index{DataSetClass.TextDataSet@{DataSetClass.TextDataSet}!words@{words}}
+\index{words@{words}!DataSetClass.TextDataSet@{DataSetClass.TextDataSet}}
+\doxysubsubsection{\texorpdfstring{words}{words}}
+{\footnotesize\ttfamily Data\+Set\+Class.\+Text\+Data\+Set.\+words}
+
+
+
+Setting stop words. 
+
+Adding user provided stopwords to set, if they exist
+
+Tokenizing the words in the data Converting all words to one list, all lower case Tokenizing
+
+Converting everything to lower case Filtering out stop words
+
+Returning cleaned words under the .words attribute 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Data\+Set\+Class.\+py\end{DoxyCompactItemize}
