@@ -1,0 +1,176 @@
+---
+title: "Data Sources"
+---
+
+The data sources for this project are 3-fold: Solar radiation and weather data, Solar Energy Generation and Consumption data, and solar stock data. The full code for this portion of the project can be found [here]()
+```{r, echo = FALSE, include = FALSE}
+library(flipbookr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+library(httr)
+library(gridExtra)
+```
+
+## Solar Radiation and Weather Data
+
+Using the [National Solar Radiation Database](https://nsrdb.nrel.gov/) and the NSRDB Viewer within, a point in the San Joaquin Valley (the most fertile farming area in the U.S.) was selected which allowed for the extraction of solar radiation and weather variables for the location at daily frequency from 1998 - 2020. The exact data can be downloaded [here](./data/solar_radiation.zip). Data for any longitude and latitude coordinates can be extracted using this site. A look at the solar radiation data can be seen below:
+```{r, echo = FALSE, warning=FALSE}
+## Reading in the solar radiation data
+solar <- 
+  list.files('data/solar_radiation', full.names = T) %>%
+  lapply(., function(x){read.csv(x, skip = 2)}) %>%
+  bind_rows()
+
+## Making a date columns
+solar$Date <- 
+  make_datetime(year = solar$Year, month = solar$Month, day = solar$Day, 
+                hour = solar$Hour, min = solar$Minute)
+
+##DATA CLEANING
+
+## Plotting a time series of all the variables to see which are interesting
+# cols_of_interest <- 
+#   solar %>% 
+#   select(-c(Year, Month, Day, Hour, Minute, Date)) %>% 
+#   colnames()
+
+# for (i in cols_of_interest){
+#   fig <- 
+#     ggplot(solar, aes(x = Date, y = .data[[i]]))+
+#     geom_line()+
+#     ggtitle(paste('Plot of Date and',i))
+#   print(fig)
+# }
+
+## Appears that the relevant vars are DHI, DNI, Dew.Point, Wind.Speed, Relative.Humidity, Temperature, and Precipitable.Water
+
+solar <- 
+  solar %>%
+  select(c(Date, Year, Month, Day, Hour, Minute, DHI, DNI, Dew.Point, Wind.Speed,
+           Relative.Humidity, Temperature, Precipitable.Water))
+
+#write.csv(solar, "data/solar_clean.csv", row.names = FALSE)
+  
+## Making the plot
+plot_ly(solar, x = ~Date, y = ~DHI, type = 'scatter', mode = 'lines', color = 'red') %>%
+  layout(title = 'Solar Radiation in the San Joaquin Valley, CA Over Time',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Solar Radiation (Watt per square meter)'))
+
+
+```
+
+## California Energy Generation and Consumption
+
+The [U.S. Energy Information Administration](https://www.eia.gov/) stores information on all forms of energy generation and consumption. It offers an API that allows for the pulling of up to 5000 rows of data at a time. They also have a point and click interface that helps craft the API for you which can be found [here](https://www.eia.gov/opendata/browser/electricity/electric-power-operational-data). The code used to unpack the JSON is below:
+```{r, eval = FALSE}
+
+# Define the API endpoint and parameters
+endpoint <- 'https://api.eia.gov/v2/electricity/electric-power-operational-data/data/?frequency=monthly&data[0]=ash-content&data[1]=consumption-for-eg&data[2]=consumption-for-eg-btu&data[3]=consumption-uto&data[4]=consumption-uto-btu&data[5]=cost&data[6]=cost-per-btu&data[7]=generation&data[8]=heat-content&data[9]=receipts&data[10]=receipts-btu&data[11]=stocks&data[12]=sulfur-content&data[13]=total-consumption&data[14]=total-consumption-btu&facets[sectorid][]=98&facets[fueltypeid][]=AOR&facets[fueltypeid][]=NG&facets[fueltypeid][]=SUN&facets[fueltypeid][]=WND&facets[location][]=CA&start=2001-01&end=2022-10&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000&api_key=F2M2Ra1oc6mkOx8oTyPnjmCHYN3R5fm12Bkey5we'
+# Send the GET request
+response <- GET(endpoint)
+
+# Parse the JSON response
+data <- content(response)
+
+##Rowbind all the json items into a df
+consumption_raw <- as.data.frame(do.call(rbind, data$response$data))
+
+##Replace Null values with NA's in each column
+consumption_lists <- 
+  lapply(consumption_raw, function(x) {
+    lapply(x, function(y) {
+      ifelse(is.null(y), NA, y)
+    })
+  }
+  )
+## Convert columns from lists to vectors
+consumption <- data.frame(lapply(consumption_lists, function(y){Reduce(c, y)}))
+
+## Write to csv to avoid recalling the API
+write.csv(consumption, 'data/consumption_CA_2001_2022.csv', row.names = FALSE)
+
+```
+
+Now we can take a quick look at the data. Notably, the solar energy consumption is larger then the utility scale power generation of solar energy. This is due to the widespread use of household solar panels to provide homes with energy.
+
+```{r, echo = FALSE, warning=FALSE}
+consumption <-
+  read.csv('data/consumption_CA_2001_2022.csv') %>%
+  select(-c(ash.content, consumption.for.eg, consumption.for.eg.units, consumption.uto,
+            consumption.uto.units, cost, cost.units, cost.per.btu, cost.per.btu.units,
+            heat.content, heat.content.units, receipts, receipts.units, receipts.btu,
+            receipts.btu.units, stocks, stocks.units, sulfur.content, sulfur.content.units,
+            total.consumption, total.consumption.units)) %>%
+  mutate(
+    period = 
+      as.Date(
+        unlist(
+          lapply(period, function(x) {paste0(x,"-01")})
+          ), 
+        format = "%Y-%m-%d"),
+    fueltypeid = as.factor(fueltypeid),
+    ## Conversion from millions of MMBTU to GWh
+    consumption_gwh = total.consumption.btu*(1000000000000)*(1/3421)*(1/1000000),
+    ratio = consumption_gwh/generation
+  ) 
+#write.csv(consumption, 'data/consumption_CA_2001_2022_clean.csv', row.names = FALSE)
+consumption %>%
+  filter(fueltypeid == "SUN") %>%
+  select(c('period','generation','consumption_gwh')) %>% 
+  pivot_longer(cols = c('generation','consumption_gwh'), names_to = 'Use')%>%
+  mutate(Use = ifelse(Use == "generation", "Utility Scale Generation", "Consumption")) %>%
+  plot_ly(., x = ~period, y = ~value, color = ~Use, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'CA Solar Energy Generation & Consumption',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Electricity (GWh)'),
+         legend = list(title=list(text='Use')))
+
+
+```
+
+## Stock Data
+
+Lastly, I will be looking at stock data using the `quantmod` library and yahoo finance. This data will be used to look at the performance of solar energy companies, particularly ones that focus on serving California residents. Using this data, it will be possible to track the financial performance of these companies over time and see how it relates to power generation and other variables like solar radiation and weather.
+```{r, echo = FALSE}
+options("getSymbols.warning4.0"=FALSE)
+options("getSymbols.yahoo.warning"=FALSE)
+
+tickers = c("SPWR","NRG","RUN" )
+for (i in tickers){
+  getSymbols(i,
+             from = "2015-09-01",
+             to = "2022-12-31")}
+stock <- data.frame(SPWR$SPWR.Adjusted,
+                    NRG$NRG.Adjusted,
+                    RUN$RUN.Adjusted)
+stock <- data.frame(stock,rownames(stock))
+colnames(stock) <- append(tickers,'date')
+
+stock$date<-as.Date(stock$date,"%Y-%m-%d")
+rownames(stock) <- 1:nrow(stock)
+
+
+plot_ly(stock, x = ~date, y = ~SPWR, name = 'SPWR', type = 'scatter', mode = 'lines') %>%
+  add_trace(y = ~NRG, name = 'NRG', type = 'scatter', mode = 'lines') %>%
+  add_trace(y = ~RUN, name = 'RUN', type = 'scatter', mode = 'lines') %>%
+  layout(title = "Stock Prices for CA Residential Solar Companies",
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Adjusted Closing Prices'),
+         legend = list(title = list(text = 'Solar Companies')))
+
+```
+
