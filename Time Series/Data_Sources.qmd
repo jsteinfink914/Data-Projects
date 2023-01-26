@@ -2,7 +2,7 @@
 title: "Data Sources"
 ---
 
-The data sources for this project are 3-fold: Solar radiation and weather data, Solar Energy Generation and Consumption data, and solar stock data. The full code for this portion of the project can be found [here]()
+The data sources for this project are 3-fold: Solar radiation and weather data, Solar Energy Generation and Consumption data, and solar stock data. The full code for this portion of the project can be found [here](https://github.com/jsteinfink914/Projects/blob/main/Time%20Series/Data_Sources.qmd)
 ```{r, echo = FALSE, include = FALSE}
 library(flipbookr)
 library(tidyverse)
