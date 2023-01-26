@@ -68,7 +68,10 @@ solar <-
 plot_ly(solar, x = ~Date, y = ~DHI, type = 'scatter', mode = 'lines', color = 'red') %>%
   layout(title = 'Solar Radiation in the San Joaquin Valley, CA Over Time',
          xaxis = list(title = 'Date'),
-         yaxis = list(title = 'Solar Radiation (Watt per square meter)'))
+         yaxis = list(title = 'Solar Radiation (Watt per square meter)'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
 
 
 ```
@@ -137,7 +140,10 @@ consumption %>%
   layout(title = 'CA Solar Energy Generation & Consumption',
          xaxis = list(title = 'Date'),
          yaxis = list(title = 'Electricity (GWh)'),
-         legend = list(title=list(text='Use')))
+         legend = list(title=list(text='Use')),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
 
 
 ```
@@ -170,7 +176,10 @@ plot_ly(stock, x = ~date, y = ~SPWR, name = 'SPWR', type = 'scatter', mode = 'li
   layout(title = "Stock Prices for CA Residential Solar Companies",
          xaxis = list(title = 'Date'),
          yaxis = list(title = 'Adjusted Closing Prices'),
-         legend = list(title = list(text = 'Solar Companies')))
+         legend = list(title = list(text = 'Solar Companies')),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
 
 ```
 
