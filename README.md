@@ -14,7 +14,7 @@ This directory is home to all code created by Jake Steinfink in the process of c
 5. GIS - Heat & Health
     1. My first shiny app making use of GIS and socioeconomic data
     2. Focuses here included improved R coding documentation and efficiency
-    3. Data Source - <a href = "https://opendatadc.gov"> Open Data DC</a>
+    3. Data Source - <a href = "https://opendata.dc.gov/"> Open Data DC</a>
 6. Big Data project Using Reddit Data - Group Project
     1. Not featured on the website
     2. Utilization of big data tools including DataBricks and Pyspark
