@@ -1,0 +1,604 @@
+---
+title: "EDA"
+---
+
+For Consistency, all data from here on out will be from 2006-2020 to keep time spans consistent.
+
+## Solar Radiation and Weather Data
+
+```{r, echo = FALSE, include = FALSE}
+library(flipbookr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+library(httr)
+library(gridExtra)
+```
+
+### Time Series of GHI
+
+Here we examine the main form of solar radiation of interest to us, GHI - solar radiation that solar panels make use of.
+
+```{r, echo = FALSE, warning = FALSE}
+solar <- read.csv('data/solar_clean.csv')
+solar$Date <- as.Date(solar$Date, format = "%Y-%m-%d")
+
+## Averaging solar radiation across Days from 2006 beyond
+solar <-
+  solar %>%
+  group_by(Date) %>%
+  summarise(GHI = mean(GHI)) %>%
+  filter(Date >= as.Date('2006-01-01'))
+
+solar_orig_fig <- 
+  plot_ly(solar, x = ~Date, y = ~GHI, color = 'red', type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Solar Radiation in the San Joaquin Valley, CA Over Time',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = "Radiation (Watt/m<sup>2</sup>)"),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+solar_orig_fig
+```
+
+`Trend:` From the plot we can see something very good for all of us, a stable and consistent seasonal pattern. This pattern remains consistent over time indicating no major trend. 
+
+`Seasonality:` We can see consistent peaks in GHI during the summer time, always peaking in June around the summer solstice, and always at a trough around the winter solstice in December. 
+
+`Periodic Variation:` There are plenty of instances of variation from the overall seasonal cycle that can be caused by a few factors. Clouds can block or scatter the sun's rays, causing changes in the amount of GHI. Atmospheric conditions like dust, pollution, and other particles in the air can affect the amount of GHI that reaches the Earth's surface. Weather patterns such as storms, high-pressure systems, and fronts can cause short-term fluctuations. Lastly, the sun operates on 11-year solar cycles, during which the sun's activity changes due to the number of sunspots, magnetic storms, and solar flares, which can impact the amount of energy and particles that the sun releases into space.
+
+`Additive Time Series:`This is an additive time series as we see constant changes over time, not exponential growth or decay. Because there is no clear trend over the time span and variance appears to be relatively equal, we can say with confidence that this is additive.
+
+### Lag Plots
+
+Lag plots are a useful tool for visualizing patterns in time series data. They help to detect the presence of autocorrelation, which occurs when the value of a time series at a given point is related to the values at previous points.
+
+In a lag plot, each data point is plotted against a lagged version of itself, with the x-axis representing the original time series values and the y-axis representing the lagged values or vice versa. The resulting scatter plot can then be used to identify any patterns or relationships between the original and lagged values.
+
+Lag plots are useful because they provide a visual representation of the relationships between the values of a time series, which can be helpful in identifying patterns such as seasonality, trend, or autocorrelation. Autocorrelation can have a significant impact on time series forecasting, as it can indicate that the values of the series are dependent on previous values and not just random fluctuations.
+
+Below is a lag plot of GHI:
+
+```{r, echo = FALSE}
+## Making a daily TS object 
+radiation <- ts(solar$GHI, start = c(2006,1), end = c(2020,12), frequency = 365)
+
+## Making a lagplot and setting lags at 1 day, and 1,3,6,9 and 12 months
+gglagplot(radiation, 
+          set.lags = c(1, 30, 90, 180, 270, 360), 
+          colour = TRUE,
+          seasonal  = FALSE)+
+  ggtitle('Lag Plots of GHI')+
+  xlab('Lags')+
+  ylab('Yt')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = 'black'),
+        legend.key = element_rect(fill = 'black'),
+        strip.background = element_rect(fill = 'black'),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'),
+        legend.position = 'none')
+```
+
+Here we see some expected patterns arising. A lag of 1 day exhibits very high positive correlation indicating that the yesterday's solar radiation is useful for predicting todays. At a lag of 1 month, we see strong positive correlation but certainly less than at one day. A one month lag is usually within the same season and thus has similar dynamics with regard to orientation of the earth and sun. At a 3 month lag we see no correlation as these reflect the relationship of solar intensity between adjacent seasons which can be either positive or negative. At 6 months, we see a strong negative trend because halfway around the calendar, solar radiation is moving the opposite direction - for instance decreasing radiation in the winter compared to increasing radiation in the summer. At 9 months we see a repeat of the relationship at 3 months for the same reasons, it is just the next season's data from the prior year (winter 2015 on spring 2014, etc.). Lastly at 360, nearly a full year, we see a strong positive correlation again.
+
+### Decomposition
+
+```{r, echo = FALSE}
+## Additive decomp because the pattern remains stable over time 
+ts_decompose(radiation) %>%
+  layout(title = 'GHI Decomposition - Additive',
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+```
+
+This additive decomposition gives insight into solar radiation. We see a very consistent trend rangebound within approximately 15 GWh over the 14 years. The plot also makes clear the consistent seasonal element of GHI fluctuating between peaks and troughs in the summer and winter respectively.
+
+### ACF and PACF
+
+ACF (Autocorrelation Function) and PACF (Partial Autocorrelation Function) are two commonly used plots in time series analysis to help identify the underlying structure of a time series.
+
+The ACF plot shows the correlation between a time series and lagged versions of itself, which helps to identify if there is a pattern in the time series that repeats itself over time. If there is a strong correlation at a specific lag, it suggests that there is an autocorrelation in the series.
+
+On the other hand, the PACF plot shows the amount of correlation between a time series and lagged versions of itself after removing the effect of intermediate lags. It can help identify the number of autoregressive (AR) terms in an ARIMA (AutoRegressive Integrated Moving Average) model, which is a common time series forecasting model. The partial autocorrelation plot shows the correlation between a time series and its lagged values, but with the effects of previous lags removed.
+
+```{r, echo = FALSE}
+## Making an ACF plot to show lagged correlations
+solar_acf <- 
+  ggAcf(radiation, color = 'yellow') + 
+  ggtitle('ACF GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+##PACF plot
+solar_pacf <- 
+  ggPacf(radiation, color = 'yellow') + 
+  ggtitle('PACF GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+gridExtra::grid.arrange(solar_acf, solar_pacf, ncol = 2)
+```
+
+The ACF plot once again displays the intense seasonality, with strong autocorrelations at almost every lag. The PACF shows strong correlation for the first handful of lags and then becomes insignificant afterwards. These plots clearly display a non stationary time series as there are intense autocorrelations amongst lagged values.
+
+### Stationarity Test
+
+An Augmented Dickey Fuller Test shows that this time series is not stationary, which can be clearly seen through the ACF plot referenced above. The reason this test is so close to confirming stationarity (technically a p-value of below .05 is all that is needed) is because the test is largely concerned with seeing a consistent mean throughout the time series, which the GHI time series appears to have. Because the main non-stationarity is a result of seasonality, we also use a KPSS test which examines this element of the time series, and here we see a more clear rejection of stationarity.
+
+```{r, warning=FALSE, echo = FALSE}
+adf.test(radiation)
+kpss.test(radiation)
+```
+
+### Making Solar Data Stationary
+
+To make the data stationary, we make use of first differencing, which follows the formula:
+$$\hat{y_t} = y_t - y_{t-1} $$
+In doing so we are looking at the change between the current and previous value, which removes trend and seasonality from the data. After applying this transformation we can see the new data: 
+
+```{r, warning=FALSE, echo=FALSE}
+
+## Taking a difference to remove trend and make the data stationary
+solar_diff <- 
+  data.frame(
+    Date = solar$Date[1:nrow(solar) - 1],
+    GHI = diff(solar$GHI)
+  )
+
+## Writing to csv for future use
+# write.csv(solar_diff, "data/differenced_solar.csv", row.names = F)
+
+solar_diff_fig <- 
+  plot_ly(solar_diff, x = ~Date, y = ~GHI, color = 'red', type = 'scatter',
+          mode = 'lines') %>%
+  layout(title = 'First Difference vs. Regular',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = "Diff. Radiation (Watt/meter<sup>2</sup>)"),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+subplot(style(solar_orig_fig, showlegend = F), solar_diff_fig,
+        nrows = 2, titleY = TRUE, shareX = TRUE) 
+```
+
+### Updated ACF and PACF
+
+```{r, echo = FALSE, warning = FALSE}
+
+## Creating the stationary solar ts object 
+solar_ts <- ts(solar_diff$GHI, start = c(2006,1), end = c(2020,12), frequency = 365)
+
+
+## Recreating the ACF and PACF plots
+
+sd_acf <- 
+  ggAcf(solar_ts, color = 'yellow') + 
+  ggtitle('ACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+sd_pacf <- 
+  ggPacf(solar_ts, color = 'yellow') + 
+  ggtitle('PACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+
+gridExtra::grid.arrange(solar_acf, solar_pacf, sd_acf, sd_pacf, ncol = 2)
+```
+The new ACF and PACF plots show how significant this transformation was from a stationarity perspective. Here the ACF shows a significant autocorrelation at a lag of 1 (because it incorporates the previous term in differencing) and then the correlations become insignificant noise. The PACF largely does not change from above, but this transformation nonetheless has taken the data from seasonal to stationary.
+
+### Updated Statitonarity Tests
+
+For a sanity check, we see that the new data is now described as stationary.
+
+```{r, echo = FALSE, warning = FALSE}
+adf.test(radiation)
+adf.test(solar_ts)
+```
+
+
+## California Energy Generation and Consumption
+
+
+### Time Series of CA Solar Energy Consumption
+
+For the rest of this project, we will be focusing solely on the solar energy consumption in CA, as it provides a more comprehensive picture of solar energy use then utility scale generation.
+
+```{r, echo = FALSE, warning = FALSE}
+consumption <- read.csv('data/consumption_CA_2001_2022_clean.csv')
+consumption$period <- as.Date(consumption$period, format = "%Y-%m-%d")
+
+## Filtering the data to only solar and fitting the date range
+consumption <- 
+  consumption %>%
+  filter(fueltypeid == "SUN" & period >= as.Date("2006-01-01") & period <= as.Date('2020-12-31')) %>%
+  select(c('period','consumption_gwh')) %>% 
+  mutate(Consumption = consumption_gwh) %>%
+  arrange(., period)
+
+consumption_fig <- 
+  plot_ly(consumption, x = ~period, y = ~Consumption, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'CA Solar Energy Consumption',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Consumption (GWh)'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+consumption_fig
+```
+
+`Trend:` There is a clear positive trend in the data as solar energy adoption increases over time. This trend appears to be exponential and began to really take off around 2014. California has a long history of providing incentives for renewable energy, including solar. In 2013, the state introduced the California Solar Initiative, which provided rebates and incentives to help offset the cost of solar installations. This combined with declining prices, and public demand in a liberal market caused the explosion in solar demand we see. 
+
+`Seasonality:` The seasonality element of solar energy consumption cannot be ignored. Production and therefore consumption is constrained mainly by solar radiation, which we saw with GHI above is highly seasonal. As a result, most of the power is produced and consumed in the summer months. This is a big limitation on solar power currently, as energy demands usually increase in the winter.
+
+`Periodic Variation:` There are plenty of instances of variation from the overall seasonal cycle that can be caused by a few factors. Energy prices of alternatives can lead to an increase or decrease from the norm. Economic cycles can also contribute to energy demand as well as the adoption rate of solar panels - these usually work together as people will not invest in solar panels as readily in a recession. Additionally, the same factors that can impact GHI like cloud cover, atmospheric conditions, and solar cycles can impact generation and thus consumption.
+
+`Multiplicative Time Series:`This is a multiplicative time series as we see proportional, instead of constant changes over time. In other words, given the exponentially increasing trend and the fact that the trend and seasonality variations increase as the magnitude of the data does. In other words as the trend increases, so do the seasonal peaks and troughs.
+
+### Lag Plots
+
+```{r, echo = FALSE, warning = FALSE}
+cons <- ts(consumption$Consumption, start = c(2006,1), end = c(2020,12), frequency = 12)
+
+gglagplot(cons, set.lags = c(1,3,6,9,12, 24))+
+  ggtitle('Lag Plots of Solar Energy Consumption in CA')+
+  xlab('Lags')+
+  ylab('Yt')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = 'black'),
+        legend.key = element_rect(fill = 'black'),
+        strip.background = element_rect(fill = 'black'),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+```
+The lag plots begin to show what was clear from the original plot - that this data is non-stationary. At all lags there are positive correlations for each month indicating autocorrelation withing the series. Correlations are strongest at a lag of 1, 12 and 24 as these represent adjacent months, and then calendar year lags. At lags of 3,6 and 9 months we still surprisingly see positive correlation, indicating that despite seasonality, the trend is so strongly positive that it overcomes the usual peak and trough pattern occurring throughout the seasons.
+
+### Decomposition
+
+```{r, echo = FALSE, warning = FALSE}
+##Multiplicative plot due to the increasing trend over time and increased variance
+ts_decompose(cons, type = 'multiplicative') %>%
+  layout(title = 'Consumption Decomposition - Multiplicative',
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+```
+
+A multiplicative decompostion was used to model this data as discussed above. We can see that after 2014 these residuals flip positive instead of negative, as that is when the exponential trend really starts to lift off.We can see the consistent seasonal pattern and the noise located around a mean of 1 which lends credence to this choice.
+
+### ACF and PACF
+
+```{r, echo = FALSE, warning = FALSE}
+cons_acf <- 
+  ggAcf(cons, color = 'yellow') + 
+  ggtitle('ACF Consumption')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+cons_pacf <- 
+  ggPacf(cons, color = 'yellow') + 
+  ggtitle('PACF Consumption')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+gridExtra::grid.arrange(cons_acf, cons_pacf, ncol = 2)
+```
+The ACF and PACF plots show the lack of stationarity in this data, with strong postive correlations at all lags in the ACF. The PACF decays as the lags get longer which is typical given the ACF plot tailing off in correlation in step with the lags.
+
+### Stationarity Test
+
+The stationarity test confirms our suspicions that the data is in fact not stationary.
+
+```{r, echo = FALSE, warning = FALSE}
+adf.test(cons)
+```
+### Making Solar Energy Consumption Stationary
+
+To make the data stationary we use a similar but slightly different technique from the solar data. We use differencing to remove the seasonality and trend, but first we take the log of the data. This is because with a multiplicative time series and an exponentially increasing trend, the variance in the differences is too variable especially as the trend takes off. A fantastic way to remove the heteroscedasticity and look at the data as percentage differences instead of absolute differences is to take the log.
+
+```{r, echo = FALSE, warning = FALSE}
+
+## Taking the lagged difference to remove trend and tamp down variance
+cons_diff <- data.frame(
+  Date = consumption$period[1:(nrow(consumption)-1)],
+  consumption = diff(log(consumption$Consumption), lag = 1, differences = 1)
+)
+# write.csv(cons_diff, "data/differenced_consumption.csv", row.names = F)
+
+consumption_fig_diff <- 
+  plot_ly(cons_diff, x = ~Date, y = ~consumption, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Log First Difference vs. Regular',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Log Diff. Consumption (GWh)'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+
+subplot(style(consumption_fig, showlegend = F), consumption_fig_diff, 
+        nrows = 2, shareX = TRUE, titleY = TRUE) 
+```
+
+### Updated ACF and PACF
+
+```{r, echo = FALSE, warning = FALSE}
+## Making a ts object of the lagged difference
+cons_d_ts <- ts(cons_diff$consumption, start = c(2006,1), end = c(2020,12), frequency = 12)
+
+
+cons_d_acf <- 
+  ggAcf(cons_d_ts, color = 'yellow') + 
+  ggtitle('ACF Log Differenced Consumption')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+cons_d_pacf <- 
+  ggPacf(cons_d_ts, color = 'yellow') + 
+  ggtitle('PACF Log Differenced Consumption')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+
+gridExtra::grid.arrange(cons_acf, cons_pacf, cons_d_acf, cons_d_pacf, ncol = 2)
+```
+
+The new ACF plot shows the large effect this has on the data as now autocorrelation is almost entirely removed except at lags of full years. This data is significantly more stationary, with more constant mean and variance over time.
+
+### Updated Statitonarity Tets
+
+The augmented dickey fuller test once again confirms this change successfully made the data stationary.
+
+```{r, echo = FALSE, warning = FALSE}
+adf.test(cons)
+adf.test(cons_d_ts)
+```
+
+## Solar Stocks - SPWR 
+
+For the sake of simplicity, SPWR will be the chosen stock for this analysis. SunPower has a strong presence in the state of CA, with a history of providing high-quality solar panels and excellent customer service. Additionally, the company's focus on innovation and commitment to sustainability positions it well in a market that values efficiency, durability, and environmentally-friendly solutions. Furthermore, SunPower's strong brand recognition and reputation has made it an industry leader in the state. Below is their stock price chart:
+
+```{r, echo = FALSE, warning = FALSE}
+options("getSymbols.warning4.0"=FALSE)
+options("getSymbols.yahoo.warning"=FALSE)
+
+## Gathering SPWR price data over the specified time frame
+tickers = c("SPWR")
+for (i in tickers){
+  getSymbols(i,
+             from = "2006-01-01",
+             to = "2020-12-31")}
+stock <- data.frame(SPWR$SPWR.Adjusted)
+stock <- data.frame(stock,rownames(stock))
+colnames(stock) <- append(tickers,'date')
+
+stock$date<-as.Date(stock$date,"%Y-%m-%d")
+rownames(stock) <- 1:nrow(stock)
+
+SPWR_price <-
+  plot_ly(stock, x = ~date, y = ~SPWR, name = 'SPWR', type = 'scatter', mode = 'lines') %>%
+  layout(title = "SPWR Stock Prices",
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Adjusted Closing Prices'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+
+SPWR_price
+
+```
+
+`Trend:` SPWR stock seems to indicate no real trend although there are subtrends within the plot that are quite strong. The run up pre-2008 coincided with immense optimism about renewable energy, which was then quickly sapped after the Great Financial Crisis. The stock remained relatively quiet until 2014 when another jump occurred likely coinciding with the increase in solar energy demand in CA as a result of the California Solar Initiative. This was followed by another downtrend until a massive spike after the lax monetary policy brought on by the COVID-19 response by the Federal Reserve which saw the entire market rise
+
+`Seasonality:` Seasonal factors can also play a role in the stock prices of solar companies. For example, the demand for solar panels and other solar technologies may be higher in the summer months, when there is more daylight and higher levels of solar irradiation, leading to higher stock prices for solar companies during this time. In the case of SPWR, it is not clear from this view that the stock exhibits seasonality.
+
+`Periodic Variation:` Stock prices are enormously volatile and can go off trend at a moment's notice. Economic indicators, such as gross domestic product (GDP) growth, unemployment rates, and inflation, can have a significant impact on stock prices. We see an example of the economy impacting the stock price after 2008 and the GFC. C Political events, such as elections, government policies, and geopolitical tensions, can also impact stock prices, like we see here in 2014 after the passage of the California Solar Initiative. Market sentiment, or the overall mood and attitude of investors, can also play a role in stock price variations. This is particularly applicable to solar energy as ESG investments usually do better in less cautious times.
+
+`Multiplicative Time Series:` This will be treated as a multiplicative time series as stocks usually experience exponential growth or decay, although SPWR has largely remained flat over its entire public market experience.
+
+
+### Lag Plots
+
+```{r, echo = FALSE, warning = FALSE}
+
+## Making ts object of SPWR prices
+stock_ts <- ts(stock$SPWR, start = c(2006,3), end = c(2020,12), frequency = 365)
+
+## lagplot
+gglagplot(stock_ts, 
+          set.lags = c(1, 30, 90, 180, 240, 360), 
+          colour = TRUE,
+          seasonal  = FALSE)+
+  ggtitle('Lag Plots of SPWR')+
+  xlab('Lags')+
+  ylab('Yt')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = 'black'),
+        legend.key = element_rect(fill = 'black'),
+        strip.background = element_rect(fill = 'black'),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'),
+        legend.position = 'none')
+```
+The patterns in this lag plot are qutie artistic! We see some positive autocorrelation in prices up to about 90 days before a significant tailoff to no autocorrelation between the prices. The strong autocorrelation at a lag of 1 day is the main takeaway of this plot and a sign that this data is not stationary.
+
+### Decomposition
+
+```{r, echo = FALSE, warning = FALSE}
+##Additive decomp due to no clear increasing or decreasing trend
+ts_decompose(stock_ts, type = 'multiplicative') %>%
+  layout(title = 'SPWR Decomposition - Multiplicative',
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+```
+
+The decomposition shows us two massive trend bumps coinciding with price spikes. The plot does give insight into the seasonal nature of the stock, which is much more consistent then what originally met the eye. We see consistent price increases taking place from the beginning of the year to 1/3 of the way (around April) before peaking and declining for the rest of the year. This pattern makes sense as financial markets usually project 6 months out, so if we know that solar consumption increases through the summer and peaks in the late summer, then the stocks in this space should increase from January through March.
+
+### ACF and PACF
+
+```{r, echo = FALSE, warning = FALSE}
+stock_acf <- 
+  ggAcf(stock_ts, color = 'yellow') + 
+  ggtitle('ACF SPWR')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+stock_pacf <- 
+  ggPacf(stock_ts, color = 'yellow') + 
+  ggtitle('PACF SPWR')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+gridExtra::grid.arrange(stock_acf, stock_pacf, ncol = 2)
+```
+
+The ACF and PACF plot shows just how non-stationary the stock data is with significant auto correlations for lags all the way up to a year and beyond. Stock data is known to be non-stationary so this and the test below are just confirmation.
+
+### Stationarity Test
+
+```{r, echo = FALSE, warning = FALSE}
+adf.test(stock_ts)
+```
+
+### Making it stationary
+
+First differencing is used to remove trend and seasonality. Just like with the consumption data we take the Log first to remove heteroscedasticity. Taking the log difference in stocks is particularly common and important to make the data symmetric around 0. Arithmetic returns are biased in that if you gain 100% on a stock and then lose 50% you make a full round trip, although intuitively you would think the average return is 25%. Taking the log of the price differences fixes this problem so that if your log return is 100% it will take a -100% return to make a full round trip. This is both helpful for interpretation and for the mathematical models as positive and negative numbers can be treated as equal magnitudes.
+
+```{r, echo = FALSE, warning = FALSE}
+## Logged difference to make it stationary and symmetric
+log_stocks <- data.frame(
+  date = stock$date[1:nrow(stock)-1],
+  SPWR = diff(log(stock$SPWR))
+)
+
+#write.csv(log_stocks, 'data/log_SPWR.csv', row.names = F)
+
+SPWR_log_returns <- 
+  plot_ly(log_stocks, x = ~date, y = ~SPWR, name = 'SPWR', type = 'scatter', mode = 'lines') %>%
+  layout(title = "SPWR Stock",
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Log Returns'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+
+subplot(style(SPWR_price, showlegend = F), SPWR_log_returns, nrows = 2, titleY = TRUE, shareX = TRUE) 
+```
+
+### Updated ACF and PACF Plots
+
+```{r, echo = FALSE, warning = FALSE}
+## ts object of log returns
+stock_log_ts <- ts(log_stocks$SPWR, start = c(2006,3), end = c(2020,12), frequency = 365)
+
+stock_log_acf <- 
+  ggAcf(stock_log_ts, color = 'yellow') + 
+  ggtitle('ACF Log Differenced SPWR Returns')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+stock_log_pacf <- 
+  ggPacf(stock_log_ts, color = 'yellow') + 
+  ggtitle('PACF Log Differenced SPWR Returns')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+
+gridExtra::grid.arrange(stock_acf, stock_pacf, stock_log_acf, stock_log_pacf, ncol = 2)
+```
+
+After log differencing, we see fully stationary data, with essentially no autocorrelation. This is the ideal outcome of making data stationary, with all lags within the bounds of insignificance. 
+
+### Updated Statitonarity Tets
+
+The updated augmented dickey fuller test confirms this result.
+
+```{r, echo = FALSE, warning=FALSE}
+adf.test(stock_ts)
+adf.test(stock_log_ts)
+```

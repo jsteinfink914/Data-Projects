@@ -1,0 +1,115 @@
+---
+title: "Data Vizes in TS"
+---
+## Solar Radiation and Weather Data
+
+Taking a look at some of the variables in this dataset shows some of the variables that can have an effect on solar panels. DNI (Direct Normal Irradiance) is a measure of the solar radiation that is directly incident on a surface, without being scattered by the atmosphere. DHI (Diffuse Horizontal Irradiance) is a measure of the solar radiation that is scattered by the atmosphere and reaches a surface indirectly. GHI (Global Horizontal Irradiance) is a measure of the total amount of solar radiation (both direct and diffuse) that is incident on a horizontal surface. It is equal to the sum of DNI and DHI. In other words, GHI takes into account both the direct sunlight and the light that has been scattered and diffused by the atmosphere. Here we see a look at DNI and GHI as well as Temperature and Wind speed, which are known to effect solar panels by reducing efficiency, especially on hot days, and causing an accumulation of debris.
+
+```{r, echo = FALSE, include = FALSE}
+library(flipbookr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+library(httr)
+library(gridExtra)
+```
+
+```{r, echo = FALSE, warning = FALSE}
+solar <- read.csv('data/solar_clean.csv')
+
+
+solar %>% 
+  select(!c('Dew.Point','Relative.Humidity','DHI', 'Precipitable.Water')) %>%
+  mutate(year_month = as.Date(paste0("1/",Month,"/",Year), format = "%d/%m/%Y")) %>%
+  group_by(year_month) %>%
+  summarise(GHI = mean(GHI),
+            DNI = mean(DNI),
+            `Wind Speed` = mean(Wind.Speed),
+            Temperature = mean(Temperature))%>%
+  pivot_longer(cols = c('GHI','DNI','Wind Speed','Temperature'),
+               names_to = 'Variable') %>%
+  ggplot(aes(x = year_month, y = value, color = Variable))+
+  geom_line() + 
+  facet_wrap(~Variable, scales = 'free')+
+  ggtitle('Time Series of Solar Radiation and Weather in San Joaquin Valley, CA')+
+  labs(subtitle = 'From 1998-2020 - Mean Values by Month')+
+  xlab('Date')+
+  ylab('Value')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = 'black'),
+        legend.key = element_rect(fill = 'black'),
+        strip.background = element_rect(fill = 'black'),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+```
+
+## California Energy Generation and Consumption
+
+Previously, we saw the plots of solar energy generation and consumption and their rapid growth over time. How, has this relationship changed over time? The plot below gives insight into a gradual, but quickening trend: the increase in utility scale solar power generation as a proportion of total consumption. The piece wise nature of the graph is odd, as it indicates the ratio remains constant within years, but decreases across years. Regardless, the overall trend is clear that utility scale solar generation is taking more share of total consumption over time, and this can be expected to continue.
+
+```{r, echo = FALSE, warning = FALSE}
+consumption <- read.csv('data/consumption_CA_2001_2022_clean.csv')
+consumption %>%
+  mutate(period = as.Date(period, format = "%Y-%m-%d")) %>%
+  filter(fueltypeid == "SUN") %>%
+  plot_ly(., x = ~period, y = ~ratio, type = 'scatter', mode = 'markers+lines') %>%
+  layout(title = 'CA Solar Energy Ratio of Consumption to Utility Scale Generation',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Ratio (GWh)'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+```
+
+## Solar Stocks 
+
+Prices of stocks can tell a lot about trends over time and the nominal number that each share is worth. But looking at daily returns give us an insight into the fluctuations in stock prices over time and provide a clearer picture of how the stocks have performed relative to each other, as well as how emotional the day to day life of a shareholder can be. By clicking on the legend, you can isolate a stock and see its daily returns.
+
+```{r, echo = FALSE, warning = FALSE}
+stock <- read.csv('data/stock.csv')
+fig <- 
+  stock %>%
+  mutate(date = as.Date(date, format = "%Y-%m-%d"),
+         SPWR = round((diff(SPWR)/SPWR)*100,2),
+         NRG = round((diff(NRG)/NRG)*100,2),
+         RUN = round((diff(RUN)/RUN)*100,2)) %>%
+  pivot_longer(cols = c('SPWR','NRG','RUN'), 
+               names_to = 'Stock', 
+               values_to = 'Return') %>%
+  ggplot(aes(x = date, y = Return, color = Stock))+
+  geom_line()+
+  ggtitle('Daily Returns of Solar Stocks serving CA')+
+  xlab('Date')+
+  ylab('% Returns')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = 'black'),
+        legend.key = element_rect(fill = 'black'),
+        strip.background = element_rect(fill = 'black'),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'))
+
+ggplotly(fig)
+
+
+```
+
