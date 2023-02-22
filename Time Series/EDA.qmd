@@ -111,6 +111,31 @@ ts_decompose(radiation) %>%
 
 This additive decomposition gives insight into solar radiation. We see a very consistent trend rangebound within approximately 15 GWh over the 14 years. The plot also makes clear the consistent seasonal element of GHI fluctuating between peaks and troughs in the summer and winter respectively.
 
+
+### Moving Average Smoothing
+```{r, echo = FALSE, warning = FALSE}
+MA_rad <- 
+  autoplot(ma(radiation, order = 30), series = '30 Day-MA')+
+  autolayer(ma(radiation, order = 180), series = '180 Day-MA')+
+  autolayer(ma(radiation, order = 360), series = '360 Day-MA')+
+  ggtitle('GHI Moving Averages')+
+  xlab('Date')+
+  ylab("Radiation (Watt/m<sup>2</sup>)")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(MA_rad)
+
+```
+
+Moving averages are another really useful way to identify trends from the overall data. They work by sliding an averaging window over the data. For instance, the 30 day MA is claculated by taking the average of the 30 data points around the target data point (15 before and 15 after). This has the effect of removing noise from the data. The MA plot here shows more of the same, we can clearly see the cyclical/seasonal nature of the data based on the 30 and 180 day MA's and the 1 year MA shows a truly flat trend in the context of the data as a whole. 
+
 ### ACF and PACF
 
 ACF (Autocorrelation Function) and PACF (Partial Autocorrelation Function) are two commonly used plots in time series analysis to help identify the underlying structure of a time series.
@@ -307,7 +332,31 @@ ts_decompose(cons, type = 'multiplicative') %>%
          font = list(color = 'white'))
 ```
 
-A multiplicative decompostion was used to model this data as discussed above. We can see that after 2014 these residuals flip positive instead of negative, as that is when the exponential trend really starts to lift off.We can see the consistent seasonal pattern and the noise located around a mean of 1 which lends credence to this choice.
+A multiplicative decompostion was used to model this data as discussed above. We can see that after 2014 these residuals flip positive instead of negative, as that is when the exponential trend really starts to lift off. We can see the consistent seasonal pattern and the noise located around a mean of 1 which lends credence to the choice of a multiplicative decomposition.
+
+### Moving Average Smoothing
+```{r, echo = FALSE, warning = FALSE}
+MA_cons <- 
+  autoplot(ma(cons, order = 3), series = '3 Month-MA')+
+  autolayer(ma(cons, order = 6), series = '6 Month-MA')+
+  autolayer(ma(cons, order = 12), series = '1 Year-MA')+
+  ggtitle('Consumption Moving Averages')+
+  xlab('Date')+
+  ylab("Consumption (GWh)")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(MA_cons)
+
+```
+
+The MA plot makes clear this exponential trend The 3 and 6 month MA's show the increasing trend along with the seasonality of the data while the 1 year MA shows only the trend which has begun to level off from its previous exponential growth since 2014. Without the noise we can see that the seasonal fluctuations have become a bit more intense as the trend has increased indicating that this will be an engineering problem that will have to be looked at closely or complimented with other energy sources to lead to a fully sustainable energy source.
 
 ### ACF and PACF
 
@@ -462,7 +511,7 @@ SPWR_price
 ```{r, echo = FALSE, warning = FALSE}
 
 ## Making ts object of SPWR prices
-stock_ts <- ts(stock$SPWR, start = c(2006,3), end = c(2020,12), frequency = 365)
+stock_ts <- ts(stock$SPWR, start = c(2006,3), end = c(2020,12), frequency = 252)
 
 ## lagplot
 gglagplot(stock_ts, 
@@ -497,7 +546,32 @@ ts_decompose(stock_ts, type = 'multiplicative') %>%
          font = list(color = 'white'))
 ```
 
-The decomposition shows us two massive trend bumps coinciding with price spikes. The plot does give insight into the seasonal nature of the stock, which is much more consistent then what originally met the eye. We see consistent price increases taking place from the beginning of the year to 1/3 of the way (around April) before peaking and declining for the rest of the year. This pattern makes sense as financial markets usually project 6 months out, so if we know that solar consumption increases through the summer and peaks in the late summer, then the stocks in this space should increase from January through March.
+The decomposition shows us two trend bumps coinciding with price spikes. The plot does give insight into the seasonal nature of the stock, which is much more consistent then what originally met the eye. We see consistent price increases taking place from the beginning of the year to 1/3 of the way (around April) before peaking and declining for the rest of the year. This pattern makes sense as financial markets usually project 6 months out, so if we know that solar consumption increases through the summer and peaks in the late summer, then the stocks in this space should increase from January through March.
+
+### Moving Average Smoothing
+```{r, echo = FALSE, warning = FALSE}
+
+MA_stock <- 
+  autoplot(ma(stock_ts,order = 60), series = '60 Day-MA')+
+  autolayer(ma(stock_ts,order = 180), series = '180 Day-MA')+
+  autolayer(ma(stock_ts,order = 360), series = '1 Year-MA')+
+  ggtitle('SPWR Moving Averages')+
+  xlab('Date')+
+  ylab("Price")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(MA_stock)
+
+```
+
+SPWR stock has been on a downward trend since 2006. The 60 and 180 day MA plots show some of the more major fluctuations the stock has seen, mostly before the GCF, and the 1 year MA shows a very smooth trendline on a downward trajectory. Despite the great momentum solar energy has seen, SPWR has not been able to reap the benefits of this.
 
 ### ACF and PACF
 
@@ -594,7 +668,7 @@ gridExtra::grid.arrange(stock_acf, stock_pacf, stock_log_acf, stock_log_pacf, nc
 
 After log differencing, we see fully stationary data, with essentially no autocorrelation. This is the ideal outcome of making data stationary, with all lags within the bounds of insignificance. 
 
-### Updated Statitonarity Tets
+### Updated Stationarity Tets
 
 The updated augmented dickey fuller test confirms this result.
 
