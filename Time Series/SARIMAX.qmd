@@ -1,0 +1,369 @@
+---
+title: "ARMA/ARIMA/SARIMA Models"
+---
+
+In this section our focus is on fitting SARIMAX models to our data. These models are used to identify relationships between the time series and other variables by adding additional regressors to the SARIMA equation. One of our main questions of interest was how does weather (e.g., temperature, precipitation, cloud cover) in California affect solar power generation over time? We can use SARIMAX models to examine this relationship.
+
+```{r, echo = FALSE, include = FALSE}
+library(flipbookr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+library(httr)
+library(gridExtra)
+```
+
+```{r, echo = F}
+
+## Reading in consumption data
+cons_orig <- read.csv('data/consumption_CA_2001_2022_clean.csv')
+cons_orig$Date <- as.Date(cons_orig$period, format = "%Y-%m-%d")
+cons_orig <- 
+  cons_orig %>%
+  filter(fueltypeid == "SUN" & period >= as.Date("2006-01-01") & period <= as.Date('2020-12-31')) %>%
+  select(c('Date','consumption_gwh')) %>% 
+  mutate(consumption = consumption_gwh) %>%
+  arrange(., Date)
+
+cons_orig$consumption <- log(cons_orig$consumption)
+
+
+
+## Original Weather data - grouping by month to compare to consumption
+solar_orig <- read.csv('data/solar_clean.csv')
+solar_orig$Date <- as.Date(solar_orig$Date, format = "%Y-%m-%d")
+solar_orig <- 
+  solar_orig %>%
+  mutate(Date = as.Date(paste0(Year,"-", Month, "-", "01"))) %>%
+  group_by(Date) %>%
+  summarise(GHI = mean(GHI),
+            Dew.Point = mean(Dew.Point),
+            Wind.Speed = mean(Wind.Speed),
+            Relative.Humidity = mean(Relative.Humidity),
+            Temperature = mean(Temperature),
+            Precipitable.Water = mean(Precipitable.Water)) %>%
+  filter(Date >= as.Date('2006-01-01'))
+
+```
+
+```{r, echo = F}
+df <- cons_orig %>% inner_join(solar_orig, by = "Date")
+df.ts<-ts(df,start = c(2006,1), frequency = 12)
+
+autoplot(df.ts[,c(3:9)], facets=TRUE) +
+  xlab("Year") + ylab("") +
+  ggtitle("Variables influencing Solar Energy Consumption in California")
+
+```
+
+## Fitting the Model Manually
+
+```{r, echo = F}
+df$GHI<- ts(df$GHI, start = c(2006,1), frequency = 12)
+df$Dew.Point<- ts(df$Dew.Point, start = c(2006,1), frequency = 12)
+df$Wind.Speed<- ts(df$Wind.Speed, start = c(2006,1), frequency = 12)
+df$Relative.Humidity<- ts(df$Relative.Humidity, start = c(2006,1), frequency = 12)
+df$Temperature<- ts(df$Temperature, start = c(2006,1), frequency = 12)
+df$Precipitable.Water<- ts(df$Precipitable.Water, start = c(2006,1), frequency = 12)
+
+############# First fit the linear model##########
+fit.reg <- lm(consumption ~ GHI + Dew.Point + Wind.Speed + Relative.Humidity + Temperature + Precipitable.Water, data=df)
+summary(fit.reg)
+
+```
+
+We see that the variables GHI, Wind Speed, and Precipitable Water are not significant indicating that solar radiation, wind, and rain are not important predictors of solar energy consumption while Dew Point, Humidity, and Temperature are. We will now fit the model again using these variables.
+
+```{r, echo =FALSE}
+fit.reg <- lm(consumption ~ Dew.Point + Relative.Humidity + Temperature, data=df)
+summary(fit.reg)
+
+```
+
+```{r, echo =FALSE}
+res.fit<-ts(residuals(fit.reg),start = c(2006,1), frequency = 12)
+
+############## Then look at the residuals ############
+res.fit %>% ggtsdisplay()
+```
+
+We see extreme autocorrelation here amongst the residuals, so now we will difference them.
+
+```{r, echo =FALSE}
+res.fit %>% diff() %>% ggtsdisplay()
+```
+
+There is still autocorrelation so now we will apply seasonal differencing.
+
+```{r, echo =FALSE}
+res.fit %>% diff() %>% diff(.,12) %>% ggtsdisplay()
+```
+
+This looks better and is now ready for testing various SARIMA models. Based on the plots we should try p of 1-3, P of 1, q of 1-4, and Q of 1.
+
+```{r, echo =FALSE}
+SARIMA.c=function(p1,p2,q1,q2,P1,P2,Q1,Q2,d,D, s,data){
+  
+  #K=(p2+1)*(q2+1)*(P2+1)*(Q2+1)
+  
+  temp=c()
+
+
+  
+  i=1
+  temp= data.frame()
+  ls=matrix(rep(NA,150*9),ncol=9)
+  
+  
+  for (p in p1:p2)
+  {
+    for(q in q1:q2)
+    {
+      for(P in P1:P2)
+      {
+        for(Q in Q1:Q2)
+        {
+            
+            model<- Arima(data,order=c(p-1,d,q-1),seasonal=list(order=c(P-1,D,Q-1), period = s))
+            ls[i,]= c(p-1,d,q-1,P-1,D,Q-1,model$aic,model$bic,model$aicc)
+            i=i+1
+            #print(c(p-1,d,q-1,P-1,D,Q-1,model$aic,model$bic,model$aicc))
+            
+          
+        }
+      }
+    }
+    
+  }
+  
+  
+  temp= as.data.frame(ls)
+  names(temp)= c("p","d","q","P","D","Q","AIC","BIC","AICc")
+  
+  temp
+  
+}
+output_cons <- SARIMA.c(1,4,1,5,1,2,1,2,1,1,12, res.fit)
+##Best Models
+out <- 
+  as.data.frame(
+      rbind(
+    output_cons[which.min(output_cons$AIC),],
+    output_cons[which.min(output_cons$BIC),], 
+    output_cons[which.min(output_cons$AICc),] 
+      )
+  )
+kableExtra::kbl(out) %>% kableExtra::kable_material_dark()
+```
+
+### Looking at Model Diagnostics
+
+```{r, echo =FALSE}
+model1 <- capture.output(sarima(res.fit, 2,1,4,1,1,1,12))
+model2 <- capture.output(sarima(res.fit, 0,1,1,0,1,1,12))
+```
+
+Both model diagnostic plots look great so we should continue with SARIMA(0,1,1)(0,1,1)\[12\] due to the principle of parsimony as it is a much simpler model.
+
+## Fitting the Model Using auto.arima()
+
+```{r, echo =FALSE}
+xreg <- cbind(Dew.Point = df.ts[, "Dew.Point"],
+              Relative.Humidity = df.ts[,"Relative.Humidity"],
+              Temperature = df.ts[,"Temperature"]
+              )
+
+fit <- auto.arima(df.ts[, "consumption"], xreg = xreg)
+summary(fit)
+```
+
+```{r, echo =FALSE}
+checkresiduals(fit)
+```
+
+`auto.arima()` fit a SARIMA(0,1,1)(2,0,2)\[12\] model. The residuals plot indicates that there is autocorrelation amongst the lags as the Ljung-Box test returned a p-value of .094. However, this number is close to the rejection criteria and the residuals plots do look solid.
+
+## Choosing the Best model with CV
+
+```{r, echo =FALSE}
+farima1 <- function(x, h){forecast(Arima(x, order=c(0,1,1), seasonal = list(order = c(0,1,1), period = 12)), h=h)}
+mod1 <- tsCV(res.fit, farima1, h=12)
+
+farima2 <- function(x, h){forecast(Arima(x, order=c(2,1,4), seasonal = list(order = c(1,1,1), period = 12)), h=h)}
+mod2 <- tsCV(res.fit, farima2, h=12)
+
+farima3 <- function(x, h){forecast(Arima(x, order=c(0,1,1), seasonal = list(order = c(2,0,2), period = 12)), h=h)}
+mod3 <- tsCV(res.fit, farima3, h=12)
+
+mse1 <- colMeans(mod1^2, na.rm = TRUE)
+mse2 <- colMeans(mod2^2, na.rm = TRUE)
+mse3 <- colMeans(mod3^2, na.rm = TRUE)
+
+error <- data.frame(horizon = 1:12, fit1 = mse1, fit2 = mse2, fit3 = mse3)
+fig <- 
+  error %>% 
+  pivot_longer(cols = c(fit1,fit2,fit3)) %>%
+  ggplot(., aes(x = horizon, y = value, color = name))+
+  geom_line()+
+  xlab("Horizon")+
+  ylab("MSE")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(fig)
+
+```
+
+Fit1 was the simple model chosen from manual selection and fit3 was the choice from `auto.arima()`. I also checked the other model from manual selection as fit2 to be thorough. Based on the results, we see that fit2 suffers from high variance and high bias, further indicating that this is not the best model. We see that fit3 is the best.
+
+```{r, echo =FALSE}
+fit <- Arima(df.ts[,'consumption'],order=c(0,1,1),seasonal = c(2,0,2),xreg=xreg)
+summary(fit)
+```
+
+## Forecasting
+
+```{r, echo =FALSE}
+dew_fit<-auto.arima(df$Dew.Point)
+summary(dew_fit) 
+fdew<-forecast(dew_fit, h = 24)
+
+humid_fit<-auto.arima(df$Relative.Humidity) 
+summary(humid_fit)
+fhumid <- forecast(humid_fit, h = 24)
+
+temp_fit<-auto.arima(df$Temperature)
+summary(temp_fit) 
+ftemp<-forecast(temp_fit, h=24)
+
+```
+
+```{r, echo =FALSE}
+fxreg <- cbind(Dew.Point = fdew$mean,
+               Humidity = fhumid$mean,
+               Temp = ftemp$mean)
+
+fcast <- forecast(fit, xreg=fxreg) #fimp$mean gives the forecasted values
+
+
+autoplot(df.ts[,'consumption'], color = 'lightblue')+
+autolayer(fcast) + xlab("Year") +
+guides(colour=guide_legend(title="Forecast")) + 
+ggtitle("Solar Energy Consumption Forecast") +
+xlab("Time") + ylab("Log Consumption (GWh)")+
+theme(plot.background = element_rect(fill = 'black'),
+      panel.background = element_rect(fill = 'black'), 
+      title = element_text(color = 'white'),
+      panel.grid = element_blank(),
+      axis.text = element_text(color = 'white'),
+      legend.background = element_rect(fill = 'black'),
+      legend.text = element_text(color = 'white'),
+      strip.text = element_text(color = 'white'))
+
+
+```
+
+## Comparing to benchmarks
+
+```{r, echo = FALSE, warning = FALSE}
+train_cons <- ts(df.ts[,'consumption'][1:160], start = decimal_date(as.Date("2006-01-01")), frequency= 12)
+test_cons <- df.ts[,'consumption'][161:180]
+## Benchmarks
+f1_c <- meanf(train_cons, h=20) 
+f2_c <- naive(train_cons, h=20) 
+f3_c <- rwf(train_cons,drift=TRUE, h=20)
+f4_c <- snaive(train_cons, h=20)
+
+##ARIMA model
+train_fit_c <- Arima(train_cons, order = c(11,1,4))
+pred_c <- forecast(train_fit_c,20)
+
+## SARIMA Model
+train_fit_c_sarima <- Arima(train_cons,order=c(0,1,1),seasonal=list(order=c(0,1,0), period = 12))
+pred_c_sarima <- forecast(train_fit_c_sarima,20)
+
+## SARIMAX Model
+xreg_train <- cbind(Dew.Point = df.ts[, "Dew.Point"][1:160],
+              Relative.Humidity = df.ts[,"Relative.Humidity"][1:160],
+              Temperature = df.ts[,"Temperature"][1:160]
+              )
+train_fit_c_sarimax <- Arima(train_cons,order=c(0,1,1),seasonal = c(2,0,2),xreg=xreg_train)
+
+## Making the forecast on the test data by forecasting the predictors
+dew_fit<-auto.arima(df$Dew.Point[1:160]) 
+fdew<-forecast(dew_fit, h = 20)
+humid_fit<-auto.arima(df$Relative.Humidity[1:160])
+fhumid <- forecast(humid_fit, h = 20)
+temp_fit<-auto.arima(df$Temperature[1:160])
+ftemp<-forecast(temp_fit, h=20)
+fxreg <- cbind(Dew.Point = fdew$mean,
+               Humidity = fhumid$mean,
+               Temp = ftemp$mean)
+pred_c_sarimax <- forecast(train_fit_c_sarimax,20, xreg = fxreg)
+
+## Comparing accuracies
+acc_c_sarima <- 
+as.data.frame(
+    rbind(
+        c("Fitted SARIMAX", round(accuracy(pred_c_sarimax$mean, test_cons), 2)),
+        c("Fitted SARIMA",round(accuracy(pred_c_sarima$mean,test_cons),2)),
+        c("Fitted ARIMA",round(accuracy(pred_c$mean,test_cons),2)),
+        c("Mean",round(accuracy(f1_c$mean, test_cons),2)),
+        c("Naive",round(accuracy(f2_c$mean, test_cons),2)),
+        c("Drift",round(accuracy(f3_c$mean, test_cons),2)),
+        c('sNaive',round(accuracy(f4_c$mean, test_cons),2))
+    )
+)
+names(acc_c_sarima) <- c("Benchmark", names(as.data.frame(accuracy(f2_c$mean, test_cons))))      
+kableExtra::kbl(acc_c_sarima) %>% kableExtra::kable_material_dark()
+```
+
+What we see from these results is that the SARIMAX model is not the best for predicting solar energy consumption. Using the variables of dew point, temperature and humidity did not add to the predictability of consumption indicating that they are not useful in addition to the time series information itself, rather they add noise that reduces accuracy. This would indicate that these variables are not what causes changes in solar energy consumption which is arguably a positive sign. Solar energy consumption is directly tied to generation, so the fact that these weather related variables do not cause a significant impact means that weather is not a major factor - which is great if you want a consistent supply of energy to consume. Rather it appears that things like technological improvement, macroeconomic factors, and government policies are the driving force behind solar energy consumption changes
+
+```{r, echo = FALSE, warning = FALSE}
+b_c <- 
+  autoplot(train_cons, color = 'lightblue') +
+  autolayer(ts(f1_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Mean", PI=FALSE) +
+  autolayer(ts(f2_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Naïve", PI=FALSE) +
+  autolayer(ts(f3_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Drift", PI=FALSE)+
+  autolayer(ts(f4_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="sNaive", PI=FALSE)+
+  autolayer(ts(pred_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12), 
+            series="Fit",PI=FALSE) +
+  autolayer(ts(pred_c_sarima$mean, start = decimal_date(as.Date("2019-05-01")), frequency =                  12), series="SARIMA Fit",PI=FALSE) +
+  autolayer(ts(pred_c_sarimax$mean, start = decimal_date(as.Date("2019-05-01")), frequency =                  12), series="SARIMAX Fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast")) + 
+  ggtitle("Solar Energy Consumption Forecast") +
+  xlab("Time") + ylab("Log Consumption (GWh)")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(b_c)
+```

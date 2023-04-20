@@ -1,0 +1,184 @@
+---
+title: "Financial Time Series Models"
+---
+
+As we saw in the ARIMA/SARIMA section, fitting time series models to stock data can be very difficult because daily returns tend to take on a random walk pattern. This is exactly what happened when we fit models manually and using `auto.arima()` - we used an ARIMA(0,1,0) model. This is not helpful in terms of predicting the next move as it provides no information.
+
+To handle stock returns data more effectively, we have to look at ARCH and GARCH models which look at the volatility of returns, modeling the conditional variance.
+
+```{r, echo = F, include = F}
+library(quantmod)
+library(plotly)
+library(ggplot2)
+library(fGarch)
+library(forecast)
+library(astsa)
+library(tseries)
+library(stats)
+library(lmtest)
+```
+
+## SPWR Stock
+
+```{r, echo = F, warning=F}
+options("getSymbols.warning4.0"=FALSE)
+options("getSymbols.yahoo.warning"=FALSE)
+
+## Gathering SPWR price data over the specified time frame
+tickers = c("SPWR")
+for (i in tickers){
+  getSymbols(i,
+             from = "2006-01-01",
+             to = "2020-12-31")}
+stock <- data.frame(SPWR)
+stock <- data.frame(stock,rownames(stock))
+colnames(stock) <- append(colnames(stock)[1:length(colnames(stock))-1],'date')
+
+stock$date<-as.Date(stock$date,"%Y-%m-%d")
+
+fig <- stock %>% plot_ly(x = ~date, type="candlestick",
+          open = ~SPWR.Open, close = ~SPWR.Close,
+          high = ~SPWR.High, low = ~SPWR.Low) 
+fig <- fig %>% layout(title = "SPWR Candlestick Chart", 
+                       xaxis = list(title = 'Date'),
+                       yaxis = list(title = 'Price'),
+                       plot_bgcolor = 'black', 
+                       paper_bgcolor = 'black',
+                       font = list(color = 'white'))
+fig
+```
+
+Taking a look at the candlestick plot of SPWR, we see that there are periods of increased and decreased momentum, as well some flat and stable periods. When modeling the ARIMA model, we looked at the log returns.
+
+```{r, echo = F, warning=F}
+returns = diff(log(Ad(SPWR)))
+chartSeries(returns)
+```
+
+Here, we can see that the series is stationary, but we also see some outsized returns (both positve and negative) that seem to cluster around eachother, this phenomenon is known as volatility clustering.
+
+### Modeling the Stock Returns
+
+```{r, echo = F, warning=F}
+spwr_ts <- ts(returns, start = c(2006,1), frequency = 252)
+spwr_ts %>% ggtsdisplay()
+```
+
+Looking at the ACF and PACF as before, we see no significant autocorrelation - a major part of the reason why we couldn't model the future with anything more than a random walk.
+
+### Looking at Squared Returns
+
+However, when we look at the squared returns, we see a different picture.
+
+```{r, echo = F, warning=F}
+spwr_ts**2 %>% ggtsdisplay()
+
+ggAcf(spwr_ts**2, na.action = na.omit, lag.max = 50) + ggtitle('ACF: SPWR squared Returns')
+ggPacf(spwr_ts**2, na.action = na.omit, lag.max = 50) + 
+  ggtitle("PACF: SPWR squared Returns")
+
+```
+
+The squared returns do have significant autocorrelation which means that this volatility clustering we saw above is real in the stock. Based on both the ACF and PACF, it seems that we need to model this with a GARCH model, specifiying both p and q for the returns. This is because we see persistence in the autocorrelation. It is important to note that normally you would fit an ARIMA model on the returns and then a GARCH model on the residuals, but in the case of the returns being modeled by ARIMA (0,1,0), we can just difference the data and fit the GARCH model.
+
+Based on the plots, we will test p's of 1-8, and q's of 1-7.
+
+### Testing GARCH Models
+
+```{r, echo = F, warning=F}
+spwr_ts <- na.omit(spwr_ts)
+output <- matrix(rep(NA,70*5),ncol=4)
+i <- 1
+for (a in 1:7){
+  for(q in 1:7){
+    form <- as.formula(paste0("~garch(",a, ",",q-1,")"))
+    fit <- capture.output(summary(garchFit(formula = form, data = spwr_ts, trace = F)))
+    line <- which(fit == "      AIC       BIC       SIC      HQIC ") + 1
+    scores <- fit[line] %>% strsplit(' ')
+    output[i,] <- c(a,q-1,scores[[1]][1], scores[[1]][2])
+    i <- i+1
+  }
+}
+output <- as.data.frame(output)
+names(output)<-  c("p","q","AIC","BIC")
+
+out <- 
+  as.data.frame(
+      rbind(
+    output[which.min(output$AIC),],
+    output[which.min(output$BIC),]
+      )
+  )
+kableExtra::kbl(out) %>% kableExtra::kable_material_dark()
+```
+
+The best model according to AIC is garch(1,6) and BIC chooses garch(1,2). Given the close performance between the two and the simplicity of garch(1,2), that is the model we will continue with.
+
+### Examining GARCH(1,2)
+
+```{r, echo = F, warning=F}
+arch12 <- garchFit(~garch(1,2), data = spwr_ts, trace = F)
+checkresiduals(residuals(arch12))
+Box.test(residuals(arch12))
+```
+
+We see two things from the information above. First, the residuals look great - no autocorrelation and normally distributed. We also ran the Ljung-Box test on the residuals which we have been using as a significance test to accept or reject the null that the residuals are not autocorrelated and we get a p-value of 0.96, indicating we can accept with confidence.
+
+### Writing the Model Equation
+
+Given the GARCH(1,2) fit we can write our equation as: $$y_t &= \mu_t + \epsilon_t &\
+\epsilon_t &= \sigma_t z_t &\
+\sigma_t^2 &= \omega + \alpha_1 \epsilon_{t-1}^2 + \alpha_2 \epsilon_{t-2}^2 + \beta_1 \sigma_{t-1}^2 + \beta_2 \sigma_{t-2}^2
+\end{align*} $$
+
+where:
+
+$y_t$ is the observed time series at time $t$, $\mu_t$ is the conditional mean of $y_t$ at time $t$,$\epsilon_t$ is the standardized residual of $y_t$ at time $t$ $\sigma_t^2$ is the conditional variance of $\epsilon_t$ at time $t$ $z_t$ is a standard normal random variable $\omega$ is the constant term in the GARCH model $\alpha_1$, $\alpha_2$, $\beta_1$, and $\beta_2$ are the autoregressive parameters of the GARCH model
+
+### Plotting Variance
+
+```{r, echo = F, warning=F}
+vol_df <- data.frame(Date = stock[1:nrow(stock)-1, 'date'], ht = arch12@h.t)
+
+ggplotly(
+  ggplot(vol_df, aes(y = ht, x = Date)) + 
+  geom_line(col = '#ff9933') + 
+  ylab('Conditional Variance') + 
+  xlab('Date')+
+  ggtitle("SPWR Conditional Variance Plot")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white')))
+```
+
+Looking at the volatility graph from the fitted model, it correlates quite well to the periods of sharp increase and decrease we see in the stock overall, namely around 2008 (the GFC), 2013 (the year leading up to when the California Solar Initiative took effect), 2016, a period of sharp decline for the stock, and the last spike around COVID.
+
+### Forecast
+
+```{r, echo = F, warning=F}
+fcast <- predict(arch12, n.ahead = 100)
+ggplotly(autoplot(spwr_ts, color = 'lightblue')+
+  autolayer(ts(fcast$meanForecast, start = c(2021,1), frequency = 252), series = "Forecast")+
+  autolayer(ts(fcast$meanForecast - 1.96*fcast$meanError, start = c(2021,1), frequency = 252), series = "Upper Bound")+
+  autolayer(ts(fcast$meanForecast + 1.96*fcast$meanError, start = c(2021,1), frequency = 252), series = "Lower Bound")+
+  guides(colour=guide_legend(title="Forecast")) + 
+  ggtitle("SPWR Log Return Forecast") +
+  xlab("Time") + ylab("Log Return")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white')))
+
+  
+```
+
+So with this plot what we get as improvement over what the ARIMA model gave us is more confidence around what the returns are going to be, especially in the short term. With this knowledge of variance, we can compare it to other stocks to make investment decisions, manage risks, etc. It is important to note that these models need constant updating, and are really only reliable tools for a very short future horizon. As a result, these models are very useful for short term trading and options trading.

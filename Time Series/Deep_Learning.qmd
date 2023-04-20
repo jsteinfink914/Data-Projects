@@ -1,0 +1,244 @@
+---
+title: "Deep Learning for TS"
+---
+
+In this section we are using Deep Learning methods including an RNN (recurrent neural network), a GRU (Gated Recurrent Unit), and a LSTM (Long Short-Term Memory) to examine the solar radiation data. We are using this specifically because of the amount of data we have - quality data from every hour over the lifespan of the data (1998 - 2020).
+
+```{python}
+#| echo: false
+#| include: false
+import pandas as pd
+import numpy as np
+df = pd.read_csv('data/solar_clean.csv')
+GHI = df.GHI
+GHI = GHI.to_numpy()
+```
+## Plotting Data
+
+```{python}
+#| echo: false
+from matplotlib import pyplot as plt
+plt.plot(range(len(GHI)), GHI)
+plt.title('GHI')
+plt.xlabel('Time')
+plt.ylabel("GHI")
+plt.show()
+```
+
+## Normalizing Data
+```{python}
+#| include: false
+GHI = GHI.astype('float64')
+mean = GHI.mean().astype('float64')
+GHI -= mean
+std = GHI.std().astype('float64')
+GHI /= std
+
+def generator(data, lookback, delay, min_index, max_index,
+                shuffle=False, batch_size=128, step=6):
+    '''
+    Generator function:
+        Inputs:
+            data: the data
+            lookback: How far back the input data is
+            delay: how far forward we predict
+            min/max indices: Delimit which time steps to take from
+            shuffle: = False to draw in chronological order
+            batch_size: # samples per batch
+            steps: How often we sample
+
+        Output:
+            Tuple of (samples, targets)
+    '''
+    if max_index is None:
+        ## Assigning last index we can take from 
+        max_index = len(data) - delay - 1
+
+    ## i is where we start from (our first predicted value)
+    i = min_index + lookback
+    while 1:
+        if shuffle:
+            rows = np.random.randint(
+                min_index + lookback, max_index, size=batch_size)
+        else:
+            ## If the first pred + batch_size exceeds the last available data point
+            if i + batch_size >= max_index:
+                ## Reassign first pred index 
+                i = min_index + lookback
+            ##Create a sequence of indices from first predicted 
+            ## value to last pred value in the batch
+            rows = np.arange(i, min(i + batch_size, max_index))
+            ## increment i for next time
+            i += len(rows)
+        ## Instantiate a matrix of dims (# inputs, #samples, # features)=
+        samples = np.zeros((len(rows), lookback // step))
+        # Instantiate 1 D matrix of target
+        targets = np.zeros((len(rows),))
+
+        for j, row in enumerate(rows):
+            ## Gathering lookback data for each pred
+            indices = range(rows[j] - lookback, rows[j], step)
+            samples[j] = data[indices]
+            targets[j] = data[rows[j] + delay]
+        yield samples, targets
+```
+
+```{python}
+#| include: false
+## Using generator function to create train, val and test sets
+lookback = 240
+step = 1
+delay = 24
+batch_size = 128
+
+train_gen = generator(GHI,
+                        lookback=lookback,
+                        delay=delay,
+                        min_index=0,
+                        max_index=100000,
+                        shuffle=True,
+                        step=step,
+                        batch_size=batch_size)
+val_gen = generator(GHI,
+                    lookback=lookback,
+                    delay=delay,
+                    min_index=100001,
+                    max_index=150000,
+                    step=step,
+                    batch_size=batch_size)
+test_gen = generator(GHI,
+                    lookback=lookback,
+                    delay=delay,
+                    min_index=150001,
+                    max_index=None,
+                    step=step,
+                    batch_size=batch_size)
+
+## Number of steps to draw to see entire val/test set
+val_steps = (150000 - 100001 - lookback)
+test_steps = (len(GHI) - 150001 - lookback)
+
+```
+
+## Naive Method as A Baseline
+
+```{python}
+#| include: false
+## Naive Method of predicting future as current
+def evaluate_naive_method():
+    batch_maes = []
+    for step in range(val_steps):
+        samples, targets = next(val_gen)
+        preds = samples[:, -1]
+        mae = np.mean(np.abs(preds - targets))
+        batch_maes.append(mae)
+    print(np.mean(batch_maes))
+evaluate_naive_method()
+```
+Because the data has been normlaized to have mean 0 and std of 1, the MAE is really the result * std which is ~ 76.48 watts per square meter off, which is quite poor.
+
+## Deep Learning Model - RNN
+
+```{python}
+#| include: false
+#| echo: false
+from keras.models import Sequential
+from keras import layers
+from keras.optimizers import RMSprop
+
+model = Sequential()
+## Using GRU layer which is cheaper to run
+## Note that now we are providing each feature as a sequence
+model.add(layers.GRU(32, input_shape=(None, float_data.shape[-1])))
+model.add(layers.Dense(1))
+model.compile(optimizer=RMSprop(), loss='mae')
+history = model.fit_generator(train_gen,
+                                steps_per_epoch=500,
+                                epochs=20,
+                                validation_data=val_gen,
+                                validation_steps=val_steps)
+```
+
+```{python}
+#| echo: false
+## Displaying the train and val loss
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+epochs = range(1, len(loss) + 1)
+plt.figure()
+plt.plot(epochs, loss, 'bo', label='Training loss')
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+plt.legend()
+plt.show()
+```
+
+## Deep Learning Model - GRU
+
+```{python}
+#| include: false
+#| echo: false
+from keras.models import Sequential
+from keras import layers
+from keras.optimizers import RMSprop
+model = Sequential()
+model.add(layers.GRU(32,
+            dropout=0.2,
+            recurrent_dropout=0.2,
+            input_shape=(None, float_data.shape[-1])))
+model.add(layers.Dense(1))
+model.compile(optimizer=RMSprop(), loss='mae')
+history = model.fit_generator(train_gen,
+                                steps_per_epoch=500,
+                                epochs=20,
+                                validation_data=val_gen,
+                                validation_steps=val_steps)
+```
+
+```{python}
+#| echo: false
+## Displaying the train and val loss
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+epochs = range(1, len(loss) + 1)
+plt.figure()
+plt.plot(epochs, loss, 'bo', label='Training loss')
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+plt.legend()
+plt.show()
+
+```
+
+
+## Deep Learning Model - LSTM
+
+```{python}
+#| include: false
+#| echo: false
+model = Sequential()
+model.add(layers.Embedding(max_features, 32))
+model.add(layers.Bidirectional(layers.LSTM(32)))
+model.add(layers.Dense(1, activation='sigmoid'))
+model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['acc'])
+history = model.fit_generator(train_gen,
+                    epochs=10,
+                    batch_size=128,
+                    validation_split=0.2)
+```
+
+```{python}
+#| echo: false
+## Displaying the train and val loss
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+epochs = range(1, len(loss) + 1)
+plt.figure()
+plt.plot(epochs, loss, 'bo', label='Training loss')
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+plt.legend()
+plt.show()
+```
+
+

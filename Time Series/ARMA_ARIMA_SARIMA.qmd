@@ -1,0 +1,1156 @@
+---
+title: "ARMA/ARIMA/SARIMA Models"
+---
+
+## Solar Radiation and Weather Data
+
+In this section our focus is on fitting ARIMA and SARIMA models to our data. In the previous EDA section, we made our data stationary which prepared it for model fitting. Now we will explore these models and choose the optimal ones to fit our data. GHI is highly seasonal, so we will first start with the typical ARIMA model, and then explore SARIMA models.
+
+```{r, echo = FALSE, include = FALSE}
+library(flipbookr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+library(httr)
+library(gridExtra)
+```
+
+```{r, echo = FALSE, warning = FALSE}
+## Differenced data
+solar <- read.csv('data/differenced_solar.csv')
+solar$Date <- as.Date(solar$Date)
+## Original data
+solar_orig <- read.csv('data/solar_clean.csv')
+solar_orig$Date <- as.Date(solar_orig$Date, format = "%Y-%m-%d")
+solar_orig <- 
+  solar_orig %>%
+  group_by(Date) %>%
+  summarise(GHI = mean(GHI)) %>%
+  filter(Date >= as.Date('2006-01-01'))
+
+## Making ts objects
+solar_orig_ts <- ts(solar_orig$GHI, start = c(2006,1), frequency = 365)
+
+solar_ts <- ts(solar$GHI, start = c(2006,1), frequency = 365)
+plot_ly(solar, x = ~Date, y = ~GHI, color = 'red', type = 'scatter',
+        mode = 'lines') %>%
+layout(title = 'Differenced GHI',
+       xaxis = list(title = 'Date'),
+       yaxis = list(title = "Diff. GHI (Watt/meter<sup>2</sup>)"),
+       plot_bgcolor = 'black', 
+       paper_bgcolor = 'black',
+       font = list(color = 'white'))
+```
+
+### Determining ARIMA Parameters
+
+```{r, echo = FALSE, warning = FALSE}
+
+sd_acf <- 
+  ggAcf(solar_ts, color = 'yellow', lag.max = 365) + 
+  ggtitle('ACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+sd_pacf <- 
+  ggPacf(solar_ts, color = 'yellow', lag.max = 365) + 
+  ggtitle('PACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+sd_acf_scaled <- 
+  ggAcf(solar_ts, color = 'yellow', lag.max = 45) + 
+  ggtitle('ACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+sd_pacf_scaled <- 
+  ggPacf(solar_ts, color = 'yellow', lag.max = 45) + 
+  ggtitle('PACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+gridExtra::grid.arrange(sd_acf, sd_pacf, sd_acf_scaled, sd_pacf_scaled, ncol = 2, nrow = 2)
+```
+
+Based on the ACF and PACF plots we can determine parameters for ARIMA models. Two different scales are shown, one that accounts for the full 365 day period (one year) and one up to a lag of 45.
+
+ARIMA is built off of 3 terms (p,d,q). Since the data is already differenced and stationary d = 0. However, when we fit the model using the raw data we would set d = 1 to take the first difference of the data.
+
+p is the number of autoregressive terms to use, ie. the number of previous terms included in the regression. We identify p from the PACF plots as that shows the independent contribution of each lag to autocorrelation. As a result, any lags that show significant independent autocorrelation are candidates for p. In this case candidates include all the way to about 130ish due to the seasonality of the data. A Sarima model will be best for this data but for the ARIMA paradigm we can't include that many terms. For now we will try 1-11.
+
+q is the number of lagged noise terms to include. For instance, if q = 2 the noise terms are computed by fitting an AR model with p lagged terms for $Y_{t-1}$ and $Y_{t-2}$. The noise terms are the residuals from these models which is then brought in to the ARIMA regression as a variable. To determine which q to choose, we look at the significant lags in the ACF plot. In this case, potential options for q are 1,2, and 4.
+
+#### ARIMA Model Selection
+
+```{r, echo = FALSE, warning = FALSE}
+ARIMA_hand <- function(p1,q1, ts){
+  ARIMA_res <- matrix(nrow = 81, ncol = 6)
+  
+  ## set counter
+  cc <-1
+  
+  ## loop over AR
+  for(p in 0:p1){
+    ## loop over MA
+    for(q in 0:q1){
+      
+    model<-Arima(ts, order = c(p,1,q))
+    ARIMA_res[cc,] <- c(p,1,q, model$aic, model$bic, model$aicc)
+    cc<- cc+1
+    }
+  }
+  ARIMA_res <- as.data.frame(ARIMA_res)
+  names(ARIMA_res) <- c("p","d","q","AIC","BIC","AICc")
+  
+  
+  ARIMA_res
+}
+
+res <- ARIMA_hand(11,4,solar_orig_ts)
+
+#Best Models
+res_s <- 
+  as.data.frame(
+      rbind(
+    res[which.min(res$AIC),], 
+    res[which.min(res$BIC),], 
+    res[which.min(res$AICc),] 
+      )
+  )
+kableExtra::kbl(res_s) %>% kableExtra::kable_material_dark()
+
+```
+
+By running through all the possible models we can use information criterion metrics like AIC, BIC, and AICc to analyze the best model. These metrics are derived from information theory and are meant to estimate test error. In the case of these 3, the goal is to find the model with the minimum value. From our results, we can see that ARIMA(8,1,2) has the lowest AIC and AICc, while ARIMA(4,1,2) has the lowest BIC value. It is important to note that BIC imposes a harsher penalty on having more parameters, so this metric will usually return a simpler model then the others.
+
+#### ARIMA Model Diagnostics
+
+```{r, echo = FALSE, warning = FALSE}
+model_output <- capture.output(sarima(solar_orig_ts, 8,1,2))
+model_output_2 <- capture.output(sarima(solar_orig_ts, 4,1,2))
+```
+
+Looking at the model diagnostics of both, we see that there is little autocorrelation among the residuals according to the ACF. The Ljung-box statistic largely confirms this. What this plot shows is the p-value resulting from a hypothesis test where the null is that the residuals at each lag are not autocorrelated - a value below .05 indicates a rejection of this hypothesis. We see that ARIMA (8,1,2) performs better than ARIMA (4,1,2) with nearly all lags failing to reject, while some lags do reject in ARIMA(4,1,2). Unfortunately, both plots show that the residuals are not normally distributed - ideally they would be, which could indicate that there are better models for this data like sarima which takes into account seasonality. Although ARIMA(8,1,2) performed slightly better in terms of lagged autocorrelation of residuals, the parsimony principle combined with the BIC metric favoring ARIMA(4,1,2) leads me to continue with this model. Simpler models, if performance difference is negligible, is always preferred.
+
+#### ARIMA Model Equation
+
+Given the model we can write our equation: $$(1-B)y_t = c + (1 + \phi_1 B + \phi_2 B^2 + \phi_3 B^3 + \phi_4 B^4) y_{t-1} + (1 + \theta_1 B + \theta_2 B^2) \varepsilon_t$$ where $B$ is the lag operator, where $B^ky_t = y_{t-k}$, $\phi$ represents the AR terms $\theta$ represents the noise (MA) terms, $\varepsilon_t$ represents the error, and $c$ represents the intercept.
+
+#### ARIMA Comparison to auto.arima()
+
+```{r, echo = FALSE, warning = FALSE}
+auto.arima(solar_orig_ts, d = 1,seasonal = F)
+```
+
+Auto.arima computed the optimal model as ARIMA(4,1,3) indicating that it would include one extra MA term in the model. The reason for the divergence is that auto.arima uses a stepwise approach to search for the optimal ARIMA model, based on the AIC or BIC criteria. Specifically, auto.arima() starts with a simple ARIMA model, and then iteratively adds AR or MA terms or increases the order of differencing until no further improvement in the AIC or BIC criterion is achieved. Because of this difference in logical framework, auto.arima will often return a slightly different model. In this case the one extra noise term does not require a significant rethinking of our current findings.
+
+#### Mapping ARIMA to Actual Data
+
+```{r, echo = FALSE, warning = FALSE}
+fit <- Arima(solar_orig_ts, order = c(4,1,3))
+
+m <- 
+  autoplot(solar_orig_ts, series = 'Actual')+ 
+  autolayer(fitted(fit), series = 'Train Fit')+
+  ggtitle("GHI") +
+  xlab("Time") + ylab("GHI (Watt/meter<sup>2</sup>)")+
+  guides(colour=guide_legend(title="Data")) + 
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(m)
+
+```
+
+Here we are plotting the predictions from the ARIMA model on the training data over the actual data. The model does a great job of staying close to the data which gives us confidence that this model is complex enough to handle the patterns we see from GHI.
+
+#### ARIMA Forecast
+
+```{r, echo = FALSE, warning = FALSE}
+autoplot(forecast(fit, 100)) +
+  autolayer(solar_orig_ts)+
+  ylab('GHI (Watt/meter^2)') + 
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        legend.position = 'none',
+        axis.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+```
+
+Plotting the forecast we see a continued down trend in the data but at a slowing rate before it would reverse for the warmer months. However, this behavior is not likely for long forecasts because the model has no sense of seasonality, which is clearly present in the data. As stated above, we need a sarima model. The bands represent the 80% and 95% CI's respectively, and we can see they occupy quite a large range, indicating that the model is not adept for making a long term prediction. This was a forecast for 100 days, and we would see much smaller CI's for a forecast of say 20 days.
+
+#### Compare ARIMA to Benchmarks
+
+```{r, echo = FALSE, warning = FALSE}
+train_solar <- ts(solar_orig_ts[1:5375], start = decimal_date(as.Date("2006-01-01")), frequency= 365)
+test_solar <- solar_orig_ts[5376:5475]
+## Benchmarks
+f1 <- meanf(train_solar, h=100) 
+f2 <- naive(train_solar, h=100) 
+f3 <- rwf(train_solar,drift=TRUE, h=100)
+f4 <- snaive(train_solar, h=100)
+##
+train_fit <- Arima(train_solar, order = c(4,1,2))
+pred <- forecast(train_fit,100)
+## Comparing accuracies
+acc <- 
+as.data.frame(
+    rbind(
+        c("Fitted ARIMA",round(accuracy(pred$mean,test_solar),2)),
+        c("Mean",round(accuracy(f1$mean, test_solar),2)),
+        c("Naive",round(accuracy(f2$mean, test_solar),2)),
+        c("Drift",round(accuracy(f3$mean, test_solar),2)),
+        c('sNaive',round(accuracy(f4$mean, test_solar),2))
+    )
+)
+names(acc) <- c("Benchmark", names(as.data.frame(accuracy(f2$mean, test_solar))))      
+kableExtra::kbl(acc) %>% kableExtra::kable_material_dark() 
+```
+
+To compare the model to benchmark methods, we split the data into a train and test set. In time series, the test set is the most recent collection of data, so here the train set is assigned as 2006-01-01 to 2020-09-22, with the test set being 2020-09-23 to 2020-12-31. Comparing the ARIMA model to benchmark methods over a 100 day prediction window, we see that the fitted ARIMA blows the other models out of the water by all metrics, with the exception of sNaive which does a decent job. This is exactly what we would want to see, as failing to outperform the benchmarks would mean this model is essentially useless. Here the benchmarks are Mean (predicting future values as the mean of the series), Naive (predictions are the last value in the series), Drift (predictions are a random walk with a drift term), and sNaive (predictions are values from the same period a year ago).
+
+```{r, echo = FALSE, warning = FALSE}
+b <- 
+  autoplot(ts(train_solar[5000:5375], start = decimal_date(as.Date("2006-01-01") + 5000), frequency= 365), color = 'darkorange') +
+  autolayer(ts(f1$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365),
+            series="Mean", PI=FALSE) +
+  autolayer(ts(f2$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365),
+            series="Naïve", PI=FALSE) +
+  autolayer(ts(f3$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365),
+            series="Drift", PI=FALSE)+
+  autolayer(ts(f4$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365),
+            series="sNaive", PI=FALSE)+
+  autolayer(ts(pred$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365), 
+            series="Fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast")) + 
+  ggtitle("GHI Forecast") +
+  xlab("Time") + ylab("GHI")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(b)
+```
+
+To show the results of each method more clearly, I cutoff a large chunk of the GHI data, but all forecast models are based on the entire train set as described above. Here, we see how the ARIMA model and sNaive are the only ones capable of somewhat tracking the downward trend. Although sNaive appears to be super effective for seasonal data, the main issue is that it copies and paste the exact replica of last year data. In real life, patterns rarely repeat exactly, and the ARIMA is a more generalizable model which has better predictive value as a result.
+
+### SARIMA Model Parameters
+
+Given what we know about GHI and the fact that it is highly seasonal, we are going to take a look at seasonal differencing instead of first differencing.
+
+```{r, echo = FALSE, warning = FALSE}
+solar_diff <- 
+  data.frame(
+    Date = solar_orig$Date[1:(length(solar_orig$Date) - 365)],
+    GHI = diff(solar_orig$GHI, 365)
+  )
+plot_ly(solar_diff, x = ~Date, y = ~GHI, color = 'red', type = 'scatter',
+        mode = 'lines') %>%
+layout(title = 'Seasonally Differenced GHI',
+       xaxis = list(title = 'Date'),
+       yaxis = list(title = "Diff. GHI (Watt/meter<sup>2</sup>)"),
+       plot_bgcolor = 'black', 
+       paper_bgcolor = 'black',
+       font = list(color = 'white'))
+```
+
+Similar to the first differenced GHI, this data looks very stationary which is exactly where we want to be.
+
+```{r, echo = FALSE, warning = FALSE}
+solar_s <- ts(solar_diff$GHI, start = c(2006,1), frequency = 365)
+sd_s_acf <- 
+  ggAcf(solar_s, color = 'yellow', lag.max = 2000) + 
+  ggtitle('ACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+sd_s_pacf <- 
+  ggPacf(solar_s, color = 'yellow', lag.max = 2000) + 
+  ggtitle('PACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+sd_s_acf_scaled <- 
+  ggAcf(solar_s, color = 'yellow', lag.max = 45) + 
+  ggtitle('ACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+sd_s_pacf_scaled <- 
+  ggPacf(solar_s, color = 'yellow', lag.max = 45) + 
+  ggtitle('PACF Differenced GHI')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+gridExtra::grid.arrange(sd_s_acf, sd_s_pacf, sd_s_acf_scaled, sd_s_pacf_scaled, ncol = 2, nrow = 2)
+```
+
+Looking at the ACF and PACF plots for a SARIMA model, we now not only have to pay attention to the typical lags, but also the key seasonal lags. In this case, a period is 365 for the solar data so we want to look at lags of 365, 730, 1095 to determine options for P and Q. In addition to trying parameters for p as 1-8, and q as 1,2 we will also examine them in conjunction with P's of 1-5 and a Q of 1.
+
+#### SARIMA Model Selection
+
+One issue in R with Sarima model selection by hand is that the maximum supported lag for fitting a SARIMA function by hand is 350. Given that our data is daily with a period taking place over 365 days, this poses a real issue for doing model fitting by hand. As a result, we have to rely upon auto.arima to do the calculation for us.
+
+```{r, echo = FALSE, warning = FALSE}
+auto.arima(solar_orig_ts)
+```
+
+The function returns a SARIMA(1,0,1)(0,1,0)\[365\] indicating that we do only have to use seasonal differencing, but with no seasonal lagged variables or noise - surprising given the ACF and PACF plots. It also incorporates 1 AR terms and 1 MA term from a typical ARIMA model.
+
+#### SARIMA Model Diagnostics
+
+```{r, echo = FALSE, warning = FALSE}
+model_output <- capture.output(sarima(solar_orig_ts, 1,0,1,0,1,0,365))
+```
+
+Based on the residuals plots we can see that this model does not do a great job of capturing the data, and is in large part due to the fact that the SARIMA models in R incorporating any Seasonal AR or MA terms for a lag past 350 fail to compute. As a result, we are left with a basic model, that has low computational complexity, but fails to do justice to the data.
+
+#### SARIMA Model Equation
+
+Given the model we can write our equation: $$y_t =  \frac{(1 + \theta_1 B)\epsilon_t}{(1 - \phi_1 B)(1 - \Phi_1 B^{365})}$$ where $B$ is the lag operator, where $B^ky_t = y_{t-k}$, $\phi$ represents the AR terms $\theta$ represents the noise (MA) terms, $\varepsilon_t$ represents the error, and $c$ represents the intercept.
+
+#### Mapping SARIMA to Actual Data
+
+```{r, echo = FALSE, warning = FALSE}
+fit_sarima <- Arima(solar_orig_ts,order = c(1,0,1), seasonal = list(order = c(0,1,0), s = 365))
+
+m_sarima <- 
+  autoplot(solar_orig_ts, series = 'Actual')+ 
+  autolayer(fitted(fit_sarima), series = 'Train Fit')+
+  ggtitle("GHI") +
+  xlab("Time") + ylab("GHI (Watt/meter<sup>2</sup>)")+
+  guides(colour=guide_legend(title="Data")) + 
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(m_sarima)
+
+```
+
+Here we are plotting the predictions from the ARIMA model on the training data over the actual data. The model does a decent enough job making predictions from the train data, but we will have to hold out judgement until we see how well it generalizes to unseen data.
+
+#### SARIMA Forecast
+
+```{r, echo = FALSE, warning = FALSE}
+autoplot(forecast(fit_sarima, 100)) +
+  autolayer(solar_orig_ts)+
+  ylab('GHI (Watt/meter^2)') + 
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        legend.position = 'none',
+        axis.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+```
+
+Plotting the forecast we see a continuation of the seasonal pattern, a marked improvement over the ARIMA model as it is able to capture the seasonality in the data. We also see tighter standard errors than what we saw from the ARIMA model which is great to see.
+
+#### Compare SARIMA to Benchmarks
+
+```{r, echo = FALSE, warning = FALSE}
+train_fit_sarima <- Arima(train_solar,order=c(1,0,1),seasonal=list(order=c(0,1,0), period = 365))
+pred_sarima <- forecast(train_fit_sarima,100)
+## Comparing accuracies
+acc_s <- 
+as.data.frame(
+    rbind(
+        c("Fitted SARIMA",round(accuracy(pred_sarima$mean,test_solar),2)),
+        c("Fitted ARIMA", round(accuracy(pred$mean, test_solar),2)),
+        c("Mean",round(accuracy(f1$mean, test_solar),2)),
+        c("Naive",round(accuracy(f2$mean, test_solar),2)),
+        c("Drift",round(accuracy(f3$mean, test_solar),2)),
+        c('sNaive',round(accuracy(f4$mean, test_solar),2))
+    )
+)
+names(acc_s) <- c("Benchmark", names(as.data.frame(accuracy(f2$mean, test_solar))))      
+kableExtra::kbl(acc_s) %>% kableExtra::kable_material_dark() 
+```
+
+One interesting phenomena we are seeing is that the results of the SARIMA model and the sNaive model are essentially identical. Upon further checks, this is not actually the case as some of the data points are different, but for all intents and purposes the model performs the same. This is interesting but not necessarily shocking. Remember that sNaive uses the values from the previous seasonal period (so in this case 365 days ago). The reason for this is due to a property that we should all be thankful for - the extreme consistency of solar radiation over time.
+
+```{r, echo = FALSE, warning = FALSE}
+b_s <- 
+  autoplot(ts(train_solar[5000:5375], start = decimal_date(as.Date("2006-01-01") + 5000), frequency= 365), color = 'darkorange') +
+  autolayer(ts(f1$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365),
+            series="Mean", PI=FALSE) +
+  autolayer(ts(f2$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365),
+            series="Naïve", PI=FALSE) +
+  autolayer(ts(f3$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365),
+            series="Drift", PI=FALSE)+
+  autolayer(ts(f4$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365),
+            series="sNaive", PI=FALSE)+
+  autolayer(ts(pred$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365), 
+            series="ARIMA Fit",PI=FALSE) +
+   autolayer(ts(pred_sarima$mean, start = decimal_date(as.Date("2006-01-01") + 5375), frequency = 365), 
+            series="SARIMA Fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast")) + 
+  ggtitle("GHI Forecast") +
+  xlab("Time") + ylab("GHI")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(b_s)
+```
+
+Plotting the predictions against eachother, we see how similar sNaive and the SARIMA fit are. In this case the ARIMA model does outperform sNaive and SARIMA over the test period, but as we had previously discussed, the ARIMA model does not do well in capturing the seasonality. As a result, we could say that within a given season (i.e Summer to Winter or Winter to Summer), the ARIMA models are optimal. But when we are looking to predict beyond a 6 month period, we should rely on sNaive or the SARIMA models.
+
+## California Solar Energy Consumption
+
+Moving on to California Solar Energy Consumption, we already have taken the log of the data and made it stationary, but can still see seasonality in the overall consumption data, indicating that we will explore both ARIMA and SARIMA models.
+
+```{r, echo = FALSE, warning = FALSE}
+## Differenced data
+cons <- read.csv('data/differenced_consumption.csv')
+cons$Date <- as.Date(cons$Date)
+## Original data
+cons_orig <- read.csv('data/consumption_CA_2001_2022_clean.csv')
+cons_orig$Date <- as.Date(cons_orig$period, format = "%Y-%m-%d")
+cons_orig <- 
+  cons_orig %>%
+  filter(fueltypeid == "SUN" & period >= as.Date("2006-01-01") & period <= as.Date('2020-12-31')) %>%
+  select(c('Date','consumption_gwh')) %>% 
+  mutate(consumption = consumption_gwh) %>%
+  arrange(., Date)
+
+cons_orig$consumption <- log(cons_orig$consumption)
+## Making ts objects
+cons_orig_ts <- ts(cons_orig$consumption, start = c(2006,1), frequency = 12)
+
+cons_ts <- ts(cons$consumption, start = c(2006,1), frequency = 12)
+
+cons_fig <- 
+  plot_ly(cons, x = ~Date, y = ~consumption, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Log Consumption and Log First Difference of Consumption',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Log Diff. Consumption (GWh)'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+cons_log <- 
+  plot_ly(cons_orig, x = ~Date, y = ~consumption, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Log Consumption and Log First Difference of Consumption',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Log Consumption (GWh)'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+
+subplot(style(cons_log, showlegend = F), cons_fig, 
+        nrows = 2, shareX = TRUE, titleY = TRUE) 
+```
+
+### Determining ARIMA Parameters
+
+```{r, echo = FALSE, warning = FALSE}
+
+cons_acf <- 
+  ggAcf(cons_ts, color = 'yellow', lag.max = 50) + 
+  ggtitle('ACF Log Differenced Consumption')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+cons_pacf <- 
+  ggPacf(cons_ts, color = 'yellow', lag.max = 50) + 
+  ggtitle('PACF Log Differenced Consumption')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+
+gridExtra::grid.arrange(cons_acf, cons_pacf, ncol = 2)
+```
+
+We can tell right away that a sarima model is going to be necessary for this data as lags of 12, 24, 36, and 48 are all significant in the ACF plot, we will examine these models later. Given an Arima framework, since the data is already differenced and stationary d = 0. However, when we fit the model using the raw data we would set d = 1 to take the first difference of the data. For p, the candidates based on the PACF plot are 7-11 as these show significant autocorrelation (I will test 1-11). We stop at 11 because the period of the data is 12 so we should not use 12+ AR or MA terms. The candidates for q are truly 0 and would be really taken into account in the sarima model, but for now we will test 0-4.
+
+#### ARIMA Model Selection
+
+```{r, echo = FALSE, warning = FALSE}
+
+res_c <- ARIMA_hand(11,4, cons_orig_ts)
+
+##Best Models
+res_cons <- 
+  as.data.frame(
+      rbind(
+    res_c[which.min(res_c$AIC),], 
+    res_c[which.min(res_c$BIC),], 
+    res_c[which.min(res_c$AICc),] 
+      )
+  )
+kableExtra::kbl(res_cons) %>% kableExtra::kable_material_dark()
+```
+
+From our results, we can see that ARIMA(11,1,4) has the lowest values for all 3 metrics which makes our choice easy!
+
+#### ARIMA Model Diagnostics
+
+```{r, echo = FALSE, warning = FALSE}
+model_output <- capture.output(sarima(cons_orig_ts, 11,1,4))
+```
+
+Looking at the model diagnostics of ARIMA(11,1,4), we see that there is essentially no autocorrelation among the residuals according to the ACF. The Ljung-box statistic doesn't quite confirms this, failing to reject the null at basically all lags, indicating some residual autocorrelation which is not ideal. Unfortunately, the Q-Q plot shows that the residuals are not entirely normally distributed - ideally they would be, which could indicate that there are better models for this data like sarima which takes into account seasonality.
+
+#### ARIMA Model Equation
+
+Given the model we can write our equation: $$(1-B)y_t = c + (1 + \phi_1 B + \phi_2 B^2 + \phi_3 B^3 + \cdots + \phi_{11} B^{11}) y_{t-1} + (1 + \theta_1 B + \theta_2 B^2 + \theta_3 B^3 + \theta_4 B^4)) \varepsilon_t$$ where $B$ is the lag operator, where $B^ky_t = y_{t-k}$, $\phi$ represents the AR terms $\theta$ represents the noise (MA) terms, $\varepsilon_t$ represents the error, and $c$ represents the intercept.
+
+#### ARIMA Comparison to auto.arima()
+
+```{r, echo = FALSE, warning = FALSE}
+auto.arima(cons_orig_ts, seasonal = F, max.p = 12, ic = "bic")
+```
+
+Auto.arima computed the optimal model as ARIMA(1,1,1) indicating that it would opt for a significantly simpler model then what we computed. Despite the jarring disagreement, this makes sense because of the results we get from our arima training. Remember that auto.arima moves in a stepwise fashion and will only continue if there is an improvement in the metrics. In our model training, the metrics actually got worse by adding AR terms before they got better. If we changed the argument `stepwise` to false, auto.arima will do an exhaustive search and return a different result.
+
+```{r, echo = FALSE, warning = FALSE}
+auto.arima(cons_orig_ts, stepwise = F, seasonal = F, max.p = 12, max.order = 17, ic = "bic")
+```
+
+Once making this change auto.arima returned a ARIMA(11,1,3) model. Importantly, we also had to modify the `max.order` argument because auto.arima is anti complex models. It is pretty clear throughout this analysis that the model we are currently using the ARIMA(11,1,4) is really beyond the complexity bounds that we want - however, sarima models should take care of this easily when we get to them. auto.arima's suggestion of ARIMA(11,1,3) is decently similar to ARIMA(11,1,4) as it justadds 1 MA term. However, given that ARIMA(11,1,4) has better metrics for all 3, we will continue with that model.
+
+#### Mapping ARIMA to Actual Data
+
+```{r, echo = FALSE, warning = FALSE}
+fit_c <- Arima(cons_orig_ts, order = c(11,1,4))
+
+m_c <- 
+  autoplot(cons_orig_ts, series = 'Actual')+ 
+  autolayer(fitted(fit_c), series = 'Train Fit')+
+  ggtitle("Solar Energy Consumption in CA") +
+  xlab("Time") + ylab("Log Consumption (GWh)")+
+  guides(colour=guide_legend(title="Data")) + 
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(m_c)
+
+```
+
+Here we are plotting the predictions from the ARIMA model on the training data over the actual data. The model does a great job of staying close to the data which gives us confidence that this model can track solar energy consumption.
+
+#### ARIMA Forecast
+
+```{r, echo = FALSE, warning = FALSE}
+autoplot(forecast(fit_c, 48)) +
+  autolayer(cons_orig_ts)+
+  ylab('Log Solar Consumption (GWh)')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        legend.position = 'none',
+        axis.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+```
+
+Plotting the forecast we see a continued projection of the trend in the data as it had leveled out significantly since 2015. The forecast is for the next 48 months or 4 years and we see with the error bars how significantly this projection can vary. Given that we are looking at the log of the consumption data, a linear increase here is an exponential increase in real life. Unlike the GHI model, this one does show an ability to oscillate in the shorter term.
+
+#### Compare ARIMA to Benchmarks
+
+```{r, echo = FALSE, warning = FALSE}
+train_cons <- ts(cons_orig_ts[1:160], start = decimal_date(as.Date("2006-01-01")), frequency= 12)
+test_cons <- cons_orig_ts[161:180]
+## Benchmarks
+f1_c <- meanf(train_cons, h=20) 
+f2_c <- naive(train_cons, h=20) 
+f3_c <- rwf(train_cons,drift=TRUE, h=20)
+f4_c <- snaive(train_cons, h=20)
+##
+train_fit_c <- Arima(train_cons, order = c(11,1,4))
+pred_c <- forecast(train_fit_c,20)
+## Comparing accuracies
+acc_c <- 
+as.data.frame(
+    rbind(
+        c("Fitted ARIMA",round(accuracy(pred_c$mean,test_cons),2)),
+        c("Mean",round(accuracy(f1_c$mean, test_cons),2)),
+        c("Naive",round(accuracy(f2_c$mean, test_cons),2)),
+        c("Drift",round(accuracy(f3_c$mean, test_cons),2)),
+        c('sNaive',round(accuracy(f4_c$mean, test_cons),2))
+    )
+)
+names(acc_c) <- c("Benchmark", names(as.data.frame(accuracy(f2_c$mean, test_cons))))      
+kableExtra::kbl(acc_c) %>% kableExtra::kable_material_dark()
+```
+
+The train set is assigned as 2006-01-01 to 2019-04-01, with the test set being 2019-05-01 to 2020-12-01. Comparing the ARIMA model to benchmark methods over a 20 month prediction window, we see that the fitted ARIMA is significantly better than all other models except the sNaive which does a decent job.
+
+```{r, echo = FALSE, warning = FALSE}
+b_c <- 
+  autoplot(train_cons, color = 'lightblue') +
+  autolayer(ts(f1_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Mean", PI=FALSE) +
+  autolayer(ts(f2_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Naïve", PI=FALSE) +
+  autolayer(ts(f3_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Drift", PI=FALSE)+
+  autolayer(ts(f4_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="sNaive", PI=FALSE)+
+  autolayer(ts(pred_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12), 
+            series="Fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast")) + 
+  ggtitle("Solar Energy Consumption Forecast") +
+  xlab("Time") + ylab("Log Consumption (GWh)")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(b_c)
+```
+
+Plotting the predictions from the ARIMA model and the benchmark methods, we see the ARIMA model and sNaive are essentially in lockstep. They map so closely because the log of solar energy consumption has begun to level off and become more predictable. The slight increase in consumption over the test period is negligible in the log plot, but it is what gives the ARIMA the model the edge in terms of RMSE above. If we were to stop the analysis here and not consider a sarima model, it is conceivable that sNaive would be the better model to use simply due to the lack of computational complexity compared to the ARIMA model. The other benchmark methods are poorly suited to this data.
+
+### SARIMA Model Parameters
+
+```{r, echo = FALSE, warning = FALSE}
+gridExtra::grid.arrange(cons_acf, cons_pacf, ncol = 2)
+```
+
+Given our initial PACF and ACF plots of the differenced log consumption data, we see how many spikes there are at the seasonal lags of 12,24, 36, and 48. This indicates that we should attempt to do some seasonal differencing on the data and see what happens.
+
+```{r, echo = FALSE, warning = FALSE}
+cons_orig_ts %>% diff() %>% diff(.,12) %>% ggtsdisplay() 
+```
+
+After the seasonal differencing we see many of these spikes have disappeared and tightening up a lot of the autocorrelation of the lags which indicates this was a smart choice. Given this knowledge, we now have to make new parameters to search through for our SARIMA model. Here, our candidates for p are 1,2, the candidates for P are 0 (we will search 1 - 3). Our candidates for q based on the ACF are 1, and for Q we will examine 1. There is no harm in looking through these extra fits outside of computational power. Given that we performed both first and seasonal differencing d = 1, and D = 1.
+
+#### SARIMA Model Selection
+
+```{r, echo = FALSE, warning = FALSE}
+SARIMA.c=function(p1,p2,q1,q2,P1,P2,Q1,Q2,d,D, s,data){
+  
+  #K=(p2+1)*(q2+1)*(P2+1)*(Q2+1)
+  
+  temp=c()
+
+
+  
+  i=1
+  temp= data.frame()
+  ls=matrix(rep(NA,150*9),ncol=9)
+  
+  
+  for (p in p1:p2)
+  {
+    for(q in q1:q2)
+    {
+      for(P in P1:P2)
+      {
+        for(Q in Q1:Q2)
+        {
+            
+            model<- Arima(data,order=c(p-1,d,q-1),seasonal=list(order=c(P-1,D,Q-1), period = s))
+            ls[i,]= c(p-1,d,q-1,P-1,D,Q-1,model$aic,model$bic,model$aicc)
+            i=i+1
+            #print(c(p-1,d,q-1,P-1,D,Q-1,model$aic,model$bic,model$aicc))
+            
+          
+        }
+      }
+    }
+    
+  }
+  
+  
+  temp= as.data.frame(ls)
+  names(temp)= c("p","d","q","P","D","Q","AIC","BIC","AICc")
+  
+  temp
+  
+}
+output_cons <- SARIMA.c(1,3,1,2,1,1,1,2,1,1,12, cons_orig_ts)
+##Best Models
+out <- 
+  as.data.frame(
+      rbind(
+    output_cons[which.min(output_cons$AIC),],
+    output_cons[which.min(output_cons$BIC),], 
+    output_cons[which.min(output_cons$AICc),] 
+      )
+  )
+kableExtra::kbl(out) %>% kableExtra::kable_material_dark()
+```
+
+The SARIMA(0,1,1)(0,1,0)\[12\] model returned the best value for all 3 metrics making the choice straightforward.
+
+#### SARIMA Model Diagnostics
+
+```{r, echo = FALSE, warning = FALSE}
+model_output <- capture.output(sarima(cons_orig_ts, 0,1,1,0,1,0,12))
+```
+
+These model diagnostics indicate precisely why this data was much better suited for a SARIMA model. Not only are the model evaluation metrics better but the residuals are much more normally distributed and exhibit less autocorrelation. At all lags we see a failure to reject the null given by the Ljung-Box test indicating that the residuals are not significantly autocorrelated which is exactly what we want to see. Also, it is important to note that this model has significantly fewer terms than the ARIMA(11,1,4) model which is also confirmation of the superior fit.
+
+#### SARIMA Model Equation
+
+The SARIMA equation is $$y_t = \frac{\theta_1 (1-B^{12})e_t}{(1-B^{12})(1-B)}$$ where $B$ is the lag operator, where $B^ky_t = y_{t-k}$, $\theta$ represents the noise (MA) terms, and $\varepsilon_t$ represents the error.
+
+#### SARIMA Comparison to auto.arima()
+
+```{r, echo = FALSE, warning = FALSE}
+auto.arima(cons_orig_ts)
+```
+
+Auto.arima computed the optimal model as SARIMA(0,1,1)(0,1,0)\[12\] which is exactly what our model selection process returned indicating strong evidence that the SARIMA model is the optimal fit.
+
+#### Mapping SARIMA to Actual Data
+
+```{r, echo = FALSE, warning = FALSE}
+fit_c_sarima <-  Arima(cons_orig_ts,order=c(0,1,1),seasonal=list(order=c(0,1,0), period = 12))
+
+m_c_sarima <- 
+  autoplot(cons_orig_ts, series = 'Actual')+ 
+  autolayer(fitted(fit_c_sarima), series = 'Train Fit')+
+  ggtitle("Solar Energy Consumption in CA") +
+  xlab("Time") + ylab("Log Consumption (GWh)")+
+  guides(colour=guide_legend(title="Data")) + 
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(m_c_sarima)
+
+
+```
+
+Here we are plotting the predictions from the SARIMA model on the training data over the actual data. The model closely resembles the train fit of the ARIMA model and both do a great job of staying close to the data which gives us confidence that this model can track solar energy consumption.
+
+#### SARIMA Forecast
+
+```{r, echo = FALSE, warning = FALSE}
+autoplot(forecast(fit_c_sarima, 48)) +
+  autolayer(cons_orig_ts)+
+  ylab('Log Solar Consumption (GWh)')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        legend.position = 'none',
+        axis.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+```
+
+The SARIMA forecast is different then the ARIMA forecast in a few ways. First, the error bars over time become much larger which at first glance would indicate that the ARIMA forecast is a bit more certain of its projection then the SARIMA one. this is true, but the SARIMA forecast likely has a more accurate measure of uncertainty given that there is true seasonality in the data. We also see that the forecast projects sharper seasonal changes as opposed to the smoother peaks and troughs from ARIMA. This is because with the knowledge of seasonality, the SARIMA model expects the seasonal reversals to be more of a pivot rather than a gradual incline and decline, better resembling the past data.
+
+#### One step ahead and 12 step ahead forecasting
+
+```{r, echo = FALSE, warning = FALSE}
+farima_cons <- function(x, h){forecast(Arima(x,order = c(0,1,1), seasonal = list(order = c(0,1,0), s = 12)), h=h)}
+
+#one-step time series cross-validation
+e_cons <- tsCV(cons_orig_ts, farima_cons, h=1)
+RMSE_cons=sqrt(mean(e_cons^2, na.rm=TRUE))
+
+### 12 step ahead
+e_12_cons <- tsCV(cons_orig_ts, farima_cons, h=12)
+RMSE_12_cons=sqrt(mean(e_12_cons^2, na.rm=TRUE))
+farima_cons <- 
+as.data.frame(
+    rbind(
+        c("1 Step Ahead Forecast",round(RMSE_cons,2)),
+        c("365 Step Ahead Forecast",round(RMSE_12_cons,2))
+    )
+)
+names(farima_cons) <- c("Forecast", "RMSE")      
+kableExtra::kbl(farima_cons) %>% kableExtra::kable_material_dark() 
+```
+
+Using Cross Validation we can get a better look at the performance of this model with differing amounts of data. A time series cross validation works by doing h-step ahead forecasting starting with one data point and going until you are fitting the model with n-h data points and predicting h steps ahead. We see here that the model does better with 1 step ahead forecasting then with 12 step ahead forecasting, which should always be the case. The fact that they performed reasonably similarly indicates that this model retains similar utility over larger prediction windows which is a big plus.
+
+```{r, echo = FALSE, warning = FALSE}
+# Compute the MSE values and remove missing values
+mse <- colMeans(e_12_cons^2, na.rm = TRUE)
+# Plot the MSE values against the forecast horizon
+h_cons <-
+  data.frame(h = 1:12, MSE = mse) %>%
+  ggplot(aes(x = h, y = MSE, color = 'blue')) + 
+  geom_point()+
+  geom_line() + 
+  ggtitle('MSE by H-step ahead Forecast') + 
+  xlab('H')+
+   theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        legend.position = 'none',
+        axis.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(h_cons)
+```
+
+This plot elucidates the point that SARIMA models do worse over larger prediction windows - this makes sense as we know the most relevant data points to a prediction are the most recent ones. The farther away the train data gets from the prediction, the less accurate it is likely to be.
+
+#### Compare SARIMA to Benchmarks
+
+```{r, echo = FALSE, warning = FALSE}
+train_fit_c_sarima <- Arima(train_cons,order=c(0,1,1),seasonal=list(order=c(0,1,0), period = 12))
+pred_c_sarima <- forecast(train_fit_c_sarima,20)
+## Comparing accuracies
+acc_c_sarima <- 
+as.data.frame(
+    rbind(
+        c("Fitted SARIMA",round(accuracy(pred_c_sarima$mean,test_cons),2)),
+        c("Fitted ARIMA",round(accuracy(pred_c$mean,test_cons),2)),
+        c("Mean",round(accuracy(f1_c$mean, test_cons),2)),
+        c("Naive",round(accuracy(f2_c$mean, test_cons),2)),
+        c("Drift",round(accuracy(f3_c$mean, test_cons),2)),
+        c('sNaive',round(accuracy(f4_c$mean, test_cons),2))
+    )
+)
+names(acc_c_sarima) <- c("Benchmark", names(as.data.frame(accuracy(f2_c$mean, test_cons))))      
+kableExtra::kbl(acc_c_sarima) %>% kableExtra::kable_material_dark()
+```
+
+Using the same test and train set as before we see that the SARIMA model slightly underperforms the ARIMA model on the test set, but by a negligible amount. Given the fact that seasonality is truly present in the data from all of our analysis, the slight increase in inaccuracy is not enough to claim that the SARIMA is no longer valid.
+
+```{r, echo = FALSE, warning = FALSE}
+b_c_sarima <- 
+  autoplot(train_cons, color = 'lightblue') +
+  autolayer(ts(f1_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Mean", PI=FALSE) +
+  autolayer(ts(f2_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Naïve", PI=FALSE) +
+  autolayer(ts(f3_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="Drift", PI=FALSE)+
+  autolayer(ts(f4_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12),
+            series="sNaive", PI=FALSE)+
+  autolayer(ts(pred_c$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12), 
+            series="ARIMA Fit",PI=FALSE) +
+  autolayer(ts(pred_c_sarima$mean, start = decimal_date(as.Date("2019-05-01")), frequency = 12), 
+            series="SARIMA Fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast")) + 
+  ggtitle("Solar Energy Consumption Forecast") +
+  xlab("Time") + ylab("Log Consumption (GWh)")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(b_c_sarima)
+```
+
+Plotting the predictions from the SARIMA model and the benchmark methods, we see the SARIMA, ARIMA, and sNaive models are essentially in lockstep. They map so closely because the log of solar energy consumption has begun to level off and become more predictable. The slight increase in consumption over the test period is negligible in the log plot, but it is what gives the ARIMA and SARIMA models the edge in terms of RMSE above. Given this information we can say that based on the slight increase in accuracy of the SARIMA model, our knowledge of seasonality in the data, and the vast decrease in computational complexity compared to ARIMA, that the SARIMA model is superior to the others. It is important to note that if the trends in solar energy consumption continue to remain this level, that the sNaive model will continue to perform extremely well. However, the SARIMA model will be more generalizable and effective at adjusting to changes, while maintaining low computational complexity.
+
+## Solar Stocks - SPWR
+
+Here, we examine SPWR stock data which we have taken the log of and used first differencing to make stationary. Given that stock returns don't show a seasonal pattern, we will be mainly focused on ARIMA models for this data and later we will look at PARCH and GARCH models.
+
+```{r, echo = FALSE, warning = FALSE}
+## Differenced data
+stock <- read.csv('data/log_SPWR.csv')
+stock$Date <- as.Date(stock$date)
+## Original data
+stock_orig <- read.csv('data/SPWR.csv')
+stock_orig$Date <- as.Date(stock_orig$date)
+
+stock_orig$SPWR <- log(stock_orig$SPWR)
+## Making ts objects
+stock_orig_ts <- ts(stock_orig$SPWR, start = c(2006,3), frequency = 252)
+
+stock_ts <- ts(stock$SPWR, start = c(2006,3), frequency = 252)
+
+stock_fig <- 
+  plot_ly(stock, x = ~Date, y = ~SPWR, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Log SPWR and Log First Difference of SPWR Prices',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Log Diff. Price'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+stock_log <- 
+  plot_ly(stock_orig, x = ~Date, y = ~SPWR, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Log Consumption and Log First Difference of SPWR Prices',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'Log Price'),
+         plot_bgcolor = 'black', 
+         paper_bgcolor = 'black',
+         font = list(color = 'white'))
+
+subplot(style(stock_log, showlegend = F), stock_fig, 
+        nrows = 2, shareX = TRUE, titleY = TRUE) 
+```
+
+### Determining ARIMA Parameters
+
+```{r, echo = FALSE, warning = FALSE}
+
+stock_acf <- 
+  ggAcf(stock_ts, color = 'yellow', lag.max = 50) + 
+  ggtitle('ACF Log Differenced Consumption')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        panel.grid = element_blank(),
+        title = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+stock_pacf <- 
+  ggPacf(stock_ts, color = 'yellow', lag.max = 50) + 
+  ggtitle('PACF Log Differenced Consumption')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+
+gridExtra::grid.arrange(stock_acf, stock_pacf, ncol = 2)
+```
+
+Given an Arima framework, since the data is already differenced and stationary d = 0. However, when we fit the model using the raw data we would set d = 1 to take the first difference of the data. For p, the candidates based on the PACF plot are 1,8 as these show significant autocorrelation (I will test 1-8). The candidates for q are also 1,8 so 1-8 will be tested.
+
+### ARIMA Model Selection
+
+```{r, echo = FALSE, warning = FALSE}
+
+res_s <- ARIMA_hand(8,8, stock_orig_ts)
+
+##Best Models
+res_stock <- 
+  as.data.frame(
+      rbind(
+    res_s[which.min(res_s$AIC),], 
+    res_s[which.min(res_s$BIC),], 
+    res_s[which.min(res_s$AICc),] 
+      )
+  )
+kableExtra::kbl(res_stock) %>% kableExtra::kable_material_dark()
+```
+
+The relevant metrics suggest 2 models - ARIMA(3,1,4) and ARIMA(0,1,0). BIC suggested the simpler model as usual, but we will want to examine both. Before we proceed further it is worth addressing an ARIMA(0,1,0) model and what that indicates. This is a model with no AR terms, and no MA terms meaning that the next value in the series would be modeled as the previous value in the series plus random noise. Essentially, it means that there is no trend in the data and it is a random walk pattern.
+
+### Model Diagnostics
+
+```{r, echo = FALSE, warning = FALSE}
+model_output <- capture.output(sarima(stock_orig_ts, 3,1,4))
+model_output_2 <- capture.output(sarima(stock_orig_ts, 0,1,0))
+```
+
+Looking at the model diagnostics of ARIMA(3,1,4), we see that there is essentially no autocorrelation among the residuals according to the ACF. The Ljung-box statistic largely confirms this, failing to reject the null at basically all lags, indicating a lack of residual autocorrelation which is good. Unfortunately, the Q-Q plot shows that the residuals are not entirely normally distributed. For ARIMA(0,1,0), there is no autocorrelation and the Ljung-box statistic fails to reject at every lag - otherwise the results are similar. Due to parsimony and the performance on the model diagnostics we will continue with ARIMA(0,1,0) the random walk model.
+
+### Model Equation
+
+Given the model we can write our equation: $$(1-B)y_t=c+\epsilon_t$$ where $B$ is the lag operator, where $B^ky_t = y_{t-k}$ and $c$ represents the intercept. The intercept is expected to be 0 in a centered series (mean 0) like the one we are modeling.
+
+### Comparison to auto.arima()
+
+```{r, echo = FALSE, warning = FALSE}
+auto.arima(stock_orig_ts)
+```
+
+Auto.arima computed the optimal model as ARIMA(0,1,0) which is in agreement with our own testing procedure. It is becoming apparent that a random walk model does well for predicting daily stock returns of SPWR. Usually this is a baseline model that can be improved upon.
+
+### Mapping to Actual Data
+
+```{r, echo = FALSE, warning = FALSE}
+fit_s <- Arima(stock_orig_ts, order = c(0,1,0))
+
+m_s <- 
+  autoplot(stock_orig_ts, series = 'Actual')+ 
+  autolayer(fitted(fit_s), series = 'Train Fit')+
+  ggtitle("Log Prices of SPWR Stock") +
+  xlab("Time") + ylab("Log Price")+
+  guides(colour=guide_legend(title="Data")) + 
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(m_s)
+
+```
+
+Here we are plotting the predictions from the ARIMA model on the training data over the actual data. Because this model is so simplistic, the train fit values are simply the actual values but shifted back a period. If you zoom in on the graph you can see this for yourself.
+
+### Forecast
+
+```{r, echo = FALSE, warning = FALSE}
+autoplot(forecast(fit_s, 1000)) +
+  autolayer(stock_orig_ts)+
+  ylab('Log SPWR Price')+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        legend.position = 'none',
+        axis.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+```
+
+This is a forecast for the next 1000 trading days. We can see one of the many drawbacks of this random walk model clearly - that predictions are the past value plus a noise value with mean 0. The error bars we see in this case are the CI intervals as explained above but because of the form of this model, these also happen to represent a Gaussian distribution perfectly with mean zero and constant variance, as that is the only uncertainty parameter in the model.
+
+### Compare to Benchmarks
+
+```{r, echo = FALSE, warning = FALSE}
+train_stock <- ts(stock_orig_ts[1:3675],start = decimal_date(as.Date("2006-01-3")), frequency= 252)
+test_stock <- stock_orig_ts[3676:3775]
+## Benchmarks
+f1_s <- meanf(train_stock, h=100) 
+f2_s <- naive(train_stock, h=100) 
+f3_s <- rwf(train_stock,drift=T, h=100)
+f4_s <- snaive(train_stock, h=100)
+##
+train_fit_s <- Arima(train_stock, order = c(0,1,0))
+pred_s <- forecast(train_fit_s,100)
+## Comparing accuracies
+acc_s <- 
+as.data.frame(
+    rbind(
+        c("Fitted ARIMA",round(accuracy(pred_s$mean,test_stock),2)),
+        c("Mean",round(accuracy(f1_s$mean, test_stock),2)),
+        c("Naive",round(accuracy(f2_s$mean, test_stock),2)),
+        c("Drift",round(accuracy(f3_s$mean, test_stock),2)),
+        c('sNaive',round(accuracy(f4_s$mean, test_stock),2))
+    )
+)
+names(acc_s) <- c("Benchmark", names(as.data.frame(accuracy(f2_s$mean, test_stock))))      
+kableExtra::kbl(acc_s) %>% kableExtra::kable_material_dark()
+```
+
+The train set is assigned as 2006-01-03 to 2020-08-08, with the test set being 2020-08-10 to 2020-12-30. Comparing the ARIMA model to benchmark methods over a 100 trading day prediction window, we see that the fitted ARIMA does exactly as well as the Naive model (because they are equivalent models, using the last entry as the predicted value), worse then the mean method (which will predict the mean stock price), and sightly better than the random walk with a drift term, and the sNaive model.
+
+```{r, echo = FALSE, warning = FALSE}
+b_s <- 
+  autoplot(ts(train_stock[2500:3675], start = decimal_date(as.Date("2015-12-07")), frequency = 252), color = 'lightblue') +
+  autolayer(ts(f1_s$mean, start = decimal_date(as.Date("2020-08-10")), frequency = 252),
+            series="Mean", PI=FALSE) +
+  autolayer(ts(f2_s$mean, start = decimal_date(as.Date("2020-08-10")), frequency = 252),
+            series="Naïve", PI=FALSE) +
+  autolayer(ts(f3_s$mean, start = decimal_date(as.Date("2020-08-10")), frequency = 252),
+            series="Drift", PI=FALSE)+
+  autolayer(ts(f4_s$mean, start = decimal_date(as.Date("2020-08-10")), frequency = 252),
+            series="sNaive", PI=FALSE)+
+  autolayer(ts(pred_s$mean, start = decimal_date(as.Date("2020-08-10")), frequency = 252), 
+            series="fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast")) + 
+  ggtitle("SPWR Log Stock Price Forecast") +
+  xlab("Time") + ylab("Log Price")+
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'), 
+        title = element_text(color = 'white'),
+        panel.grid = element_blank(),
+        axis.text = element_text(color = 'white'),
+        legend.background = element_rect(fill = 'black'),
+        legend.text = element_text(color = 'white'),
+        strip.text = element_text(color = 'white'))
+
+ggplotly(b_s)
+```
+
+Plotting the predictions from the ARIMA model and the benchmark methods, we see just how poorly the fit model does, and how unnatural it appears. The sNaive prediction looks natural and may have fit very well if the stock entered a downtrned just like it did at the end of 2019, but this would be no more than luck. For financial modeling, we need better tools, which we examine more in the [Financial Time Series Models](./Financial.html) tab.
