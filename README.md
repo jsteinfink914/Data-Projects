@@ -1,6 +1,6 @@
 # Projects
 
-This directory is home to all code created by Jake Steinfink in the process of completing multiple projects, most of which are featured on <a href= "https://jrs.georgetown.domains"> my website</a> including:
+This directory is home to all code created by Jake Steinfink in the process of completing multiple projects, most of which are featured on <a href= "https://site-iota-fawn.vercel.app"> my website</a> including:
 
 1. NBA Salary Prediction
     1. First end to end project ever completed - as a result there are many undesirable aspects including a relatively messy repo and a lack of good coding hygeine
